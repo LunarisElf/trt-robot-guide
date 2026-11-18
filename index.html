@@ -334,6 +334,26 @@ code { border-radius: 6px; }
 @media (max-width: 900px) {
   .rail a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 2px solid var(--rule); box-shadow: var(--clay-press); }
 }
+
+/* เดโม calibrate */
+.cal-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 24px; align-items: start; padding: 12px 14px 14px; border-top: 1px solid var(--rule); }
+.cal-panel .msg { grid-column: 1 / -1; }
+.cal-steps { list-style: none; margin: 0; padding: 0; counter-reset: c; font-size: 16px; }
+.cal-steps li { position: relative; padding: 4px 0 4px 36px; color: var(--ink-3); counter-increment: c; }
+.cal-steps li::before { content: counter(c); position: absolute; left: 0; top: 5px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 600 13px/1 var(--disp); background: var(--vinyl-2); color: var(--ink-2); }
+.cal-steps li.on { color: var(--ink); font-weight: 600; }
+.cal-steps li.on::before { background: var(--navy); color: #fff; }
+.cal-steps li.done { color: var(--ink-2); }
+.cal-steps li.done::before { background: var(--rule); color: var(--navy-2); }
+.cal-bars { display: flex; gap: 10px; }
+.cal-bar { width: 44px; text-align: center; font: 600 12px/1.3 var(--disp); color: var(--ink-2); }
+.cal-bar .trk { position: relative; height: 110px; margin: 4px 0; border: 2px solid var(--rule); border-radius: 10px; overflow: hidden; background: linear-gradient(#fff, #1e1b4b); }
+.cal-bar .rng { position: absolute; left: 6px; right: 6px; display: none; background: rgba(129, 140, 248, .8); border-radius: 4px; }
+.cal-bar .thr { position: absolute; left: 0; right: 0; height: 3px; margin-top: -1px; display: none; background: var(--can-o); }
+.cal-bar small { font: 600 11px/1.2 var(--disp); color: var(--ink-3); }
+.beep { font: 600 13px/1 var(--disp); padding: 6px 10px; border-radius: 999px; background: var(--can-o); color: #fff; opacity: 0; transition: opacity .1s; }
+.beep.on { opacity: 1; }
+@media (max-width: 600px) { .cal-panel { grid-template-columns: minmax(0, 1fr); } .cal-bars { justify-content: space-between; } }
 </style>
 </head>
 <body>
@@ -405,6 +425,7 @@ code { border-radius: 6px; }
           <br>เสียงยาว 1 ครั้ง = ไม่สำเร็จ ไม่บันทึก วางให้เส้นอยู่กลางหุ่นมากขึ้น แล้วทำข้อ 1 ใหม่</li>
         <li><b>ปิดเครื่อง แล้วเปิดใหม่ (ไม่ต้องกดปุ่ม)</b> หุ่นพร้อมวิ่ง ค่าถูกจำไว้ ปิดเครื่องก็ไม่หาย</li>
       </ol>
+      <div class="sim calib" id="calibDemo"></div>
     </section>
 
     <section class="sec" id="eyes">
@@ -932,6 +953,21 @@ const SIM = (() => {
       *Speed_motor(x) { st.SPEED = x; st.initial_motor_speed = x; analogWrite('B', x); analogWrite('A', x); },
       *Speed_LR(x, y) { st.speed_L = x; st.speed_R = y; },
       *speed_LR(x, y) { st.speed_L = x; st.speed_R = y; },
+      *_calibrate() {   // เหมือนโหมด calibrate ใน setup(): รอ 0.5 วิ หมุนกวาดซ้าย/ขวาสลับทุก 750 ms รวม 3 วิ
+        const cal = st.calib = { min: [1023, 1023, 1023, 1023, 1023], max: [0, 0, 0, 0, 0], ok: null };
+        yield* delay(500);
+        analogWrite('A', st.speed_trun); analogWrite('B', st.speed_trun);
+        const t0 = millis();
+        while (millis() - t0 < 3000) {
+          if (Math.floor((millis() - t0) / 750) % 2 === 0) drive_motor(1, 0, 0, 1); else drive_motor(0, 1, 1, 0);
+          read_sensor();
+          for (let i = 0; i < 5; i++) { cal.min[i] = Math.min(cal.min[i], C[i]); cal.max[i] = Math.max(cal.max[i], C[i]); }
+          yield* tick();
+        }
+        yield* fw.STOP(100);
+        cal.ok = cal.max.every((m, i) => m - cal.min[i] >= 100);   // ตัวไหนต่างไม่ถึง 100 = ไม่เคยเห็นเส้น
+        if (cal.ok) for (let i = 0; i < 5; i++) S[i] = Math.floor((cal.min[i] + cal.max[i]) / 20) * 10;
+      },
       *push() {
         yield* fw.Speed_motor(240); const t0 = millis();
         while (millis() - t0 < 300) { read_sensor(); cheack_error_down(); follow_line(); yield* tick(); }
@@ -1332,6 +1368,84 @@ if (typeof module !== 'undefined') module.exports = SIM;
   }
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); mountDemo(e.target); } }), { rootMargin: '300px' });
   $$('[data-demo]').forEach(el => io.observe(el));
+
+  // ---------- เดโม calibrate ----------
+  function mountCalib(el) {
+    el.innerHTML = `<div class="stage"><canvas width="1200" height="500" role="img" aria-label="หุ่นจำลองกำลัง calibrate หมุนกวาดซ้ายขวาบนเส้นดำ"></canvas></div>
+      <div class="ctrl"><button class="btn go" type="button">${label('play', 'เล่น')}</button>
+      <div class="seg" aria-label="วางหุ่นแบบไหน"><button type="button" data-p="ok" aria-pressed="true">วางคร่อมเส้น</button><button type="button" data-p="bad">วางห่างเส้น (ผิด)</button></div>
+      <label class="chk"><input type="checkbox" checked> เปิดเสียงบี๊บ</label><span class="beep" aria-hidden="true">บี๊บ</span></div>
+      <div class="cal-panel"><ol class="cal-steps">
+        <li>กดปุ่มค้าง แล้วเปิดเครื่อง (บี๊บ 1 ครั้ง)</li><li>ปล่อยปุ่ม เอามือออก</li><li>หุ่นหมุนกวาดซ้ายขวา 3 วินาที</li><li>ฟังเสียง: ผ่านหรือไม่ผ่าน</li></ol>
+        <div class="cal-bars">${[0, 1, 2, 3, 4].map(i => `<div class="cal-bar"><span>C${i}</span><div class="trk"><i class="rng"></i><i class="thr"></i></div><small>-</small></div>`).join('')}</div>
+        <p class="msg" aria-live="polite"></p></div>`;
+    const cv = $('canvas', el), btn = $('.btn', el), snd = $('input', el), beepEl = $('.beep', el), msg = $('.msg', el);
+    const steps = $$('.cal-steps li', el), bars = $$('.cal-bar', el);
+    let place = 'ok', ac = null;
+    function beep(f, ms) {
+      beepEl.classList.add('on'); setTimeout(() => beepEl.classList.remove('on'), Math.min(ms / p.speed, 1500));
+      if (!snd.checked) return;
+      try {
+        ac = ac || new AudioContext();
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'square'; o.frequency.value = f; g.gain.value = .03;
+        o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + ms / 1000 / p.speed);
+      } catch (e) { /* เบราว์เซอร์ไม่มีเสียง ก็แค่ไม่ดัง */ }
+    }
+    function build() {
+      const field = { lines: [[[-10, 30], [140, 30]]], cans: [], bounds: [0, 0, 120, 60] };
+      const run = SIM.createRun(field, place === 'ok' ? { x: 60, y: 30, th: 0 } : { x: 60, y: 12, th: 0 });
+      const ev = []; let phase = -1, status = 'running';
+      const g = (function* () {
+        phase = 0; ev.push([2000, 200]); yield* run.fw.STOP(550);
+        phase = 1; yield* run.fw.STOP(300);
+        phase = 2; yield* run.fw._calibrate();
+        phase = 3;
+        if (run.st.calib.ok) for (let k = 0; k < 3; k++) { ev.push([2000, 200]); yield* run.fw.STOP(350); }
+        else { ev.push([2000, 1500]); yield* run.fw.STOP(1500); }
+      })();
+      return {
+        run, ev, get phase() { return phase; }, get status() { return status; },
+        advance(ms) { const end = run.r.t + ms; while (status === 'running' && run.r.t < end) if (g.next().done) status = 'done'; return status; },
+      };
+    }
+    const p = makePlayer({
+      canvas: cv, speed: 1, view: () => [0, 5, 120, 55], build,
+      onFrame(R) {
+        while (R.ev.length) beep(...R.ev.shift());
+        steps.forEach((li, i) => { li.className = i < R.phase ? 'done' : i === R.phase ? 'on' : ''; });
+        const cal = R.run.st.calib;
+        bars.forEach((b, i) => {
+          const rng = b.querySelector('.rng'), thr = b.querySelector('.thr'), v = b.querySelector('small');
+          if (!cal || cal.max[i] < cal.min[i]) { rng.style.cssText = 'display:none'; thr.style.display = 'none'; v.textContent = '-'; return; }
+          const top = (1 - cal.max[i] / 1023) * 100, bot = (cal.min[i] / 1023) * 100;
+          rng.style.cssText = `display:block;top:${top}%;bottom:${bot}%`;
+          const done = cal.ok;
+          thr.style.display = done ? 'block' : 'none';
+          if (done) thr.style.top = (1 - R.run.st.S[i] / 1023) * 100 + '%';
+          v.textContent = done ? R.run.st.S[i] : cal.max[i] - cal.min[i] < 100 ? 'ไม่เห็นดำ' : 'เห็นแล้ว';
+        });
+      },
+      onEnd(R) {
+        btn.innerHTML = label('reset', 'เล่นอีกครั้ง');
+        const cal = R.run.st.calib;
+        if (cal.ok) { msg.className = 'msg ok'; msg.textContent = 'บี๊บสั้น 3 ครั้ง = สำเร็จ เส้นสีส้มในแต่ละช่องคือค่ากลางที่หุ่นจำไว้ ต่ำกว่านี้ = ดำ สูงกว่านี้ = ขาว'; }
+        else { msg.className = 'msg bad'; msg.textContent = 'เสียงยาวครั้งเดียว = ไม่สำเร็จ เซนเซอร์ไม่เคยผ่านเส้นดำ หุ่นไม่บันทึกค่า ให้วางหุ่นคร่อมเส้นแล้วทำใหม่'; }
+      },
+    });
+    const idle = () => { msg.className = 'msg'; msg.textContent = 'กด เล่น แล้วดูหุ่นหมุนกวาด แถบสีม่วงคือช่วงค่าที่เซนเซอร์แต่ละตัวเห็น (บน = ขาว ล่าง = ดำ)'; };
+    btn.onclick = () => {
+      if (p.playing) { p.pause(); btn.innerHTML = label('play', 'เล่นต่อ'); return; }
+      if (!p.R || p.R.status !== 'running') p.reset();
+      msg.textContent = ''; p.play(); btn.innerHTML = label('pause', 'หยุดชั่วคราว');
+    };
+    $$('.seg button', el).forEach(b => b.onclick = () => {
+      $$('.seg button', el).forEach(x => x.setAttribute('aria-pressed', x === b)); place = b.dataset.p;
+      p.reset(); idle(); btn.innerHTML = label('play', 'เล่น');
+    });
+    p.reset(); idle();
+  }
+  { const el = $('#calibDemo'); if (el) mountCalib(el); }
 
   // ---------- hero ----------
   {
