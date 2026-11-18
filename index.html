@@ -354,6 +354,34 @@ code { border-radius: 6px; }
 .beep { font: 600 13px/1 var(--disp); padding: 6px 10px; border-radius: 999px; background: var(--can-o); color: #fff; opacity: 0; transition: opacity .1s; }
 .beep.on { opacity: 1; }
 @media (max-width: 600px) { .cal-panel { grid-template-columns: minmax(0, 1fr); } .cal-bars { justify-content: space-between; } }
+
+/* เดโมหาค่าล้อ */
+.tune-runs { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px 0; border-top: 1px solid var(--rule); }
+.tune-runs span { display: inline-flex; gap: 6px; align-items: baseline; font: 600 13px/1 var(--disp); color: var(--ink-3); padding: 7px 10px; border: 2px solid var(--rule); border-radius: 10px; background: #fff; }
+.tune-runs span b { font: 600 13px/1 var(--mono); color: var(--ink-2); }
+.tune-runs span.done { background: var(--vinyl-2); border-color: var(--vinyl-2); }
+.tune-runs span.cur { border-color: var(--navy); color: var(--ink); }
+.tune-runs span.best { background: var(--can-o); border-color: var(--can-o); color: #fff; }
+.tune-runs span.best b { color: #fff; }
+.tune-msg { padding: 8px 12px 12px; }
+
+/* แก้สนามแข่ง */
+.editor { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px; border-top: 1px solid var(--rule); background: var(--paper); }
+.editor[hidden] { display: none; }
+.editor .hint { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--ink-3); }
+.play canvas.editable { cursor: crosshair; }
+.editor .seg { flex-wrap: wrap; }
+.editor .seg button { white-space: nowrap; }
+
+/* วัดเวลา */
+.eta-box { flex-basis: 100%; display: grid; gap: 6px; padding: 10px 12px; border: 2px solid var(--rule); border-radius: 14px; background: var(--vinyl); }
+.spd { display: inline-flex; align-items: center; gap: 8px; font: 600 15px/1.4 var(--disp); color: var(--ink-2); }
+.spd-row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+.spd-out { font: 600 15px/1.4 var(--disp); color: var(--navy-2); }
+.spd input { width: 84px; min-height: 40px; padding: 4px 10px; font: 600 16px/1 var(--mono); color: var(--ink); border: 2px solid var(--rule); border-radius: 10px; background: #fff; }
+.eta { margin: 0; font-size: 16px; color: var(--ink); }
+.eta b { font-family: var(--disp); }
+.eta-note { margin: 0; font-size: 13px; color: var(--ink-3); }
 </style>
 </head>
 <body>
@@ -371,6 +399,7 @@ code { border-radius: 6px; }
     <span>กำลังรัน: <span class="now" id="heroNow">-</span></span>
     <span id="heroScore"></span>
     <a href="#play">เปิดสนามทดลอง</a>
+    <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">ดาวน์โหลดโค้ดหุ่น</a>
     <button class="btn" id="heroToggle" type="button"></button>
   </div>
 </header>
@@ -390,6 +419,7 @@ code { border-radius: 6px; }
       <a class="sub" href="#g-turn">เลี้ยว</a>
       <a class="sub" href="#g-can">ดันกระป๋อง</a>
       <a class="sub" href="#g-blind">เคลื่อนที่ไม่ดูเส้น</a>
+      <a class="sub" href="#g-tune">หาค่าล้อให้วิ่งตรง</a>
       <a class="sub" href="#g-back">ถอยหลัง (ไม่แนะนำ)</a>
       <a class="sub" href="#g-stop">หยุด</a>
       <a href="#play">สนามทดลอง</a>
@@ -590,6 +620,35 @@ code { border-radius: 6px; }
         <div class="sim" data-demo="R"></div>
       </article>
 
+      <h3 class="group-h" id="g-tune">หาค่าล้อให้วิ่งตรง</h3>
+      <p>ล้อสองข้างมักแรงไม่เท่ากัน ใช้สองคำสั่งนี้หาค่าชดเชย ใส่ไว้ใน <code>Mission()</code> ใต้บรรทัดตั้งค่า แทนเส้นทาง แล้วอัปโหลด</p>
+
+      <article class="cmd" id="c-tune_trim">
+        <header><h3>tune_trim(true) <span class="alt">/ tune_trim(false)</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>ครบ 9 รอบ</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>หาค่า trim ที่ทำให้หุ่นเดินหน้าตรง</dd>
+        <dt>ใช้ตอนไหน</dt><dd>หลังเปลี่ยนมอเตอร์ หรือเห็นหุ่นวิ่งเบ้ หุ่นเบ้ขวาใช้ <code>tune_trim(true)</code> เบ้ซ้ายใช้ <code>tune_trim(false)</code></dd>
+        <dt>เกิดอะไร</dt><dd>หุ่นเดินหน้า 1.5 วินาทีแล้วหยุดรอ วางหุ่นกลับที่เดิม กดปุ่ม รอบต่อไปจะลดความเร็วล้อข้างที่แรงกว่าลงอีก 5 ทำแบบนี้ 9 รอบ</dd></dl>
+        <div class="sim" data-tune="trim"></div>
+        <div class="col"><p style="margin-top:14px"><b>อ่านผล:</b> นับว่ารอบไหนวิ่งตรงที่สุด แล้วดูตัวเลขในตาราง</p></div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>รอบที่</th><th>ค่าที่ได้</th><th>ใส่ที่ไหน</th></tr></thead>
+          <tbody><tr><td>1 2 3 4 5 6 7 8 9</td><td>0 5 10 15 20 25 30 35 40</td><td>เบ้ขวา: <code>trim_L = ค่านั้น;</code> เบ้ซ้าย: <code>trim_R = ค่านั้น;</code></td></tr></tbody>
+        </table></div>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ดูให้แน่ก่อนว่าหุ่นเบ้ไปทางไหนจริง (รอบที่ 1 ไม่ลดล้อเลย ใช้ดูได้) อย่าเดาว่าล้อไหนช้า ถ้าเลือกผิดข้าง หุ่นจะยิ่งเบ้มากขึ้นทุกรอบ</p></div>
+      </article>
+
+      <article class="cmd" id="c-tune_GB">
+        <header><h3>tune_GB()</h3><span class="ends sensor"><b>หยุดเมื่อ</b>ครบ 9 รอบ</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>หาค่าความเร็วล้อที่ทำให้ <code>GB()</code> ถอยหลังตรง</dd>
+        <dt>ใช้ตอนไหน</dt><dd>เมื่อ GB() ถอยแล้วเบ้</dd>
+        <dt>เกิดอะไร</dt><dd>หุ่นถอยหลัง 1.5 วินาทีแล้วหยุดรอ ล้อซ้ายคงที่ 100 ล้อขวาเพิ่มรอบละ 5 (100 ถึง 140) วางหุ่นกลับที่เดิมแล้วกดปุ่มทุกรอบ ทำ 9 รอบ</dd></dl>
+        <div class="sim" data-tune="gb"></div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>รอบที่</th><th>ค่าล้อขวา</th><th>ใส่ที่ไหน</th></tr></thead>
+          <tbody><tr><td>1 2 3 4 5 6 7 8 9</td><td>100 105 110 115 120 125 130 135 140</td><td><code>Speed_LR(ค่านั้น, 100);</code> ก่อนใช้ GB()</td></tr></tbody>
+        </table></div>
+      </article>
+
       <h3 class="group-h" id="g-back">ถอยหลัง (ไม่แนะนำ)</h3>
       <div class="can-note warn"><span class="can" aria-hidden="true"></span><p><b>ไม่แนะนำให้ใช้คำสั่งกลุ่มนี้</b> เซนเซอร์อยู่ด้านหน้า พอถอยหลังหุ่นจะส่ายและหลุดเส้นง่าย ถ้าจำเป็นต้องถอย ใช้ <code>GB()</code> สั้นๆ แทน หรือใช้ TR / TL กลับหลังหันแล้วเดินหน้าแทนการถอย</p></div>
 
@@ -642,17 +701,28 @@ code { border-radius: 6px; }
       <h2>สนามทดลอง</h2>
       <div class="col">
         <p class="lede">เขียน Mission เองแล้วกดรัน ใช้คำสั่งได้ทุกตัวในหน้านี้ รวมถึง <code>speed_trun = 150;</code> แบบกำหนดค่า และ <code>return;</code> เพื่อหยุดทดสอบครึ่งทาง</p>
-        <p><b>สนามฝึก</b> ออกแบบให้แยกอยู่บนทางตรง ภารกิจตัวอย่างดันครบ 6 ใบ <b>สนาม MRC Layout C</b> วาดตามรูปสนามแข่ง มีโค้งหักศอกและเส้นแยกในโค้ง ภารกิจตัวอย่างยังไม่ผ่านทั้งหมด ลองจูนดู</p>
+        <p><b>สนามฝึก</b> เส้นแยกอยู่บนทางตรงหมด ภารกิจตัวอย่างดันครบ 6 ใบ <b>สนามแข่ง (แก้ได้)</b> วาดตามรูปสนามจริง วางเส้นแยกเดี่ยวหรือเส้นแยกคู่เองได้ แล้วกด <b>สร้าง Mission ให้</b> เพื่อได้โค้ดตั้งต้น ถ้าระหว่างทางมีโค้งที่อาจหลอก FLR / FLL (โค้งขวาหลอก FLR โค้งซ้ายหลอก FLL) โค้ดจะใส่ <code>FL_time(...)</code> ดักไว้ข้างหน้าให้เอง เวลาที่ใส่คิดจากหุ่นจำลอง ใช้กับหุ่นจริงต้องจูนใหม่</p>
       </div>
       <div class="play" id="playground">
-        <div class="stage"><canvas width="1200" height="600" aria-label="สนามทดลอง"></canvas></div>
+        <div class="stage"><canvas width="1200" height="600" aria-label="สนามทดลอง"></canvas>
+          <div class="editor" hidden>
+            <div class="seg" data-mode aria-label="เครื่องมือแก้สนาม"><button type="button" data-m="R" aria-pressed="true">+ เส้นแยกขวา</button><button type="button" data-m="L">+ เส้นแยกซ้าย</button><button type="button" data-m="LR">+ เส้นแยกคู่</button></div>
+            <div class="seg" data-mode aria-label="เครื่องมืออื่น"><button type="button" data-m="can">กระป๋อง</button><button type="button" data-m="del">ลบ</button><button type="button" data-m="eta">วัดเวลา</button></div>
+            <button class="btn go" type="button" data-act="gen">สร้าง Mission ให้</button>
+            <button class="btn" type="button" data-act="def">สนามแข่งล่าสุด</button>
+            <button class="btn" type="button" data-act="clear">ล้างเส้นแยก</button>
+            <p class="hint">เลือกเครื่องมือ แล้วคลิกบนเส้นสนาม ซ้าย/ขวา นับตามทิศที่หุ่นวิ่ง (ตามเข็มนาฬิกา)</p>
+            <div class="eta-box"><div class="spd-row"><label class="spd">Speed_motor <input type="number" data-k="pwm" value="240" min="50" max="255" step="5" inputmode="numeric"></label><label class="spd">ความเร็วที่ 255 <input type="number" data-k="v255" value="58" min="5" max="300" step="1" inputmode="numeric"> cm/วินาที</label><span class="spd-out" aria-live="polite"></span></div>
+            <p class="eta" aria-live="polite"></p>
+            <p class="eta-note">ความเร็วคิดแบบเทียบส่วนจากค่าที่ 255 (240 = 240/255 ของความเร็วเต็ม) ค่า 58 คือหุ่นจำลอง หุ่นจริงวัดเองได้: ใส่ <code>Speed_motor(255); FL_time(2000);</code> บนทางตรง วัดระยะที่วิ่งได้ (cm) แล้วหาร 2 Speed_motor ต่ำกว่าประมาณ 100 ค่าจะไม่ค่อยแม่น ทางโค้งเยอะหุ่นจะช้าลง ให้เผื่อเวลา</p></div>
+          </div></div>
         <div class="side">
           <div class="tools">
             <button class="btn go" data-act="run" type="button"></button>
             <button class="btn" data-act="step" type="button"></button>
             <button class="btn" data-act="reset" type="button"></button>
             <div class="seg" data-speed aria-label="ความเร็วจำลอง"><button type="button" data-v="1" aria-pressed="true">1×</button><button type="button" data-v="2">2×</button><button type="button" data-v="4">4×</button></div>
-            <div class="seg" data-field aria-label="เลือกสนาม"><button type="button" data-v="practice" aria-pressed="true">สนามฝึก</button><button type="button" data-v="layoutC">MRC Layout C</button></div>
+            <div class="seg" data-field aria-label="เลือกสนาม"><button type="button" data-v="practice" aria-pressed="true">สนามฝึก</button><button type="button" data-v="custom">สนามแข่ง (แก้ได้)</button></div>
           </div>
           <textarea spellcheck="false" aria-label="โค้ด Mission"></textarea>
           <ol class="codeview" hidden></ol>
@@ -714,7 +784,7 @@ FL_time(1500); FLR(); ...                <span class="c">// มีโค้ง�
     </section>
   </main>
 </div>
-<footer class="foot">คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 17 พ.ย. 2569 ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
+<footer class="foot">ดาวน์โหลดโค้ดหุ่นล่าสุด: <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">หน้า Release</a> (ไฟล์ zip แตกแล้วเปิดใน Arduino IDE ได้เลย)<br>คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 17 พ.ย. 2569 ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
 
 <script>
 // ===== TRT sim engine: แปลงโค้ด Arduino จริงเป็น JS generator ทีละบรรทัด =====
@@ -782,7 +852,7 @@ const SIM = (() => {
     const r = {
       x: start.x, y: start.y, th: start.th, vl: 0, vr: 0,
       pwmA: 0, pwmB: 0, ain: [0, 0], bin: [0, 0], t: 0,
-      trail: [], weakR: opts.weakR || 0,
+      trail: [], weakR: opts.weakR || 0, weakL: opts.weakL || 0,
     };
     const st = {   // global ของ firmware (ชื่อเดียวกับใน .ino)
       Kp: 20, Ki: 0, Kd: 1, P: 0, I: 0, D: 0, PID_value: 0, previous_error: 0, previous_I: 0, error: 0,
@@ -806,7 +876,7 @@ const SIM = (() => {
     }
     function step() {
       const R = wheelTarget(r.ain[0], r.ain[1], r.pwmA, r.weakR);   // PWMA = มอเตอร์ขวา
-      const L = wheelTarget(r.bin[0], r.bin[1], r.pwmB, 0);         // PWMB = มอเตอร์ซ้าย
+      const L = wheelTarget(r.bin[0], r.bin[1], r.pwmB, r.weakL);         // PWMB = มอเตอร์ซ้าย
       r.vr += ((R.v ?? 0) - r.vr) / R.tau;
       r.vl += ((L.v ?? 0) - r.vl) / L.tau;
       const v = (r.vl + r.vr) / 2, w = (r.vl - r.vr) / TRACK;   // ล้อขวาเร็ว = เลี้ยวซ้าย (th ลด)
@@ -1057,7 +1127,107 @@ const SIM = (() => {
   }
 
   // ---------- fields ----------
-  const LOOP = [[11, 53], [11.5, 30], [12, 12], [17, 9], [25, 10], [45, 14], [62, 20], [100, 32], [140, 45], [160, 52], [165, 57], [170, 65], [178, 74], [185, 75], [190, 72], [192, 65], [190, 57], [180, 50], [170, 37], [167, 22], [172, 15], [185, 12], [205, 12.5], [220, 15], [228, 20], [229, 28], [224, 35], [221, 42], [224, 55], [227, 70], [226, 80], [220, 88], [218, 95], [215, 105], [200, 110], [185, 110], [170, 102], [158, 93], [145, 81], [133, 74], [120, 70], [100, 70], [90, 71], [80, 75], [72, 75], [69, 70], [70, 65], [74, 60], [76, 54], [72, 49], [60, 49], [52, 54], [51, 62], [50, 75], [48, 95], [42, 105], [32, 109], [20, 106], [12, 97], [11, 88], [11, 67], [11, 53]];
+  // วงสนามแข่ง: ไล่ตามเส้นดำจากรูปสนามจริง (topdown_latest.png, 4 px = 1 cm) เริ่มในกล่อง หันขึ้น ตามเข็มนาฬิกา
+  const LOOP = [[10.3, 53], [10.4, 49], [10.5, 45], [10.5, 41], [10.5, 37], [10.6, 33.2], [10.6, 29.6], [10.7, 26], [10.9, 22], [11.4, 18], [12, 14.5], [13.2, 11.7], [15.4, 10], [19, 9.5], [22.5, 9.9], [25.8, 10.1], [29, 10.5], [32.9, 11.4], [36.7, 12.8], [40.5, 14.1], [43.6, 15.2], [46.7, 16.3], [50.2, 17.3], [54, 18.5], [57.9, 19.6], [61.1, 20.1], [64.2, 21.1], [67.5, 22.5], [71.2, 23.9], [75.1, 25.1], [78.9, 26.4], [82.7, 27.5], [86.5, 28.7], [90.4, 29.7], [94.3, 30.6], [98.1, 31.6], [101.7, 33.3], [105.4, 34.8], [109.2, 36], [113, 37.2], [116.8, 38.4], [120.6, 39.7], [124.5, 40.7], [128.4, 41.7], [132.1, 43.2], [136, 44.3], [139.1, 45.1], [142.1, 46.1], [145.4, 47.8], [149.1, 49.2], [153.1, 49.9], [156.8, 51], [159.9, 52.7], [162.4, 55], [164.7, 57.7], [166.9, 60.6], [169, 63.7], [171.1, 66.9], [173.6, 69.8], [176.4, 72], [179, 74.5], [181.5, 76.2], [185, 76.5], [188.6, 73.1], [190.8, 70.2], [191.8, 66.6], [191.7, 63], [190.7, 59.5], [188.9, 57.1], [186.4, 55.1], [183.2, 52.7], [180.9, 50.4], [178.8, 48], [176.6, 45], [174.4, 41.7], [172.1, 38.8], [170.7, 36.1], [169.8, 33], [168.8, 29.1], [168.3, 25.4], [168.4, 21.9], [169.7, 18.9], [171.9, 17.5], [175, 17.2], [178.5, 16.4], [182, 14.6], [185.3, 12.6], [189, 12.7], [193, 12.8], [197, 13], [201, 13.3], [204.1, 13.6], [207.2, 13.9], [210.8, 14.3], [214.7, 15], [218.3, 15.6], [221.5, 16.8], [224.6, 18.7], [227.3, 20.9], [228.7, 24], [228.9, 27.1], [227.5, 29.9], [224.1, 31.7], [222.1, 34.5], [221.2, 38.1], [221.1, 42.2], [221.2, 46], [222.2, 49.9], [223.1, 53.6], [223.9, 57.2], [224.8, 61], [225.8, 64.8], [226.5, 68.5], [227.2, 72.2], [227.6, 76.1], [227, 79.4], [225.5, 82.4], [222.9, 85.2], [220.5, 88.3], [218.9, 91.7], [218.6, 95.5], [217.8, 99.1], [216.5, 102.6], [214.7, 105.3], [211.4, 106.8], [207.6, 108.1], [203.8, 109.4], [200, 110], [196, 110.1], [192, 110.3], [188.2, 110.4], [184.7, 109.6], [181.5, 108], [178.1, 105.9], [174.7, 103.8], [171.7, 101.9], [168.7, 100.1], [165.9, 97.5], [162.8, 95], [160, 92.7], [157.5, 90.2], [154.3, 88.1], [150.8, 86], [148.1, 83.1], [145.1, 80.7], [141.8, 78.5], [138.5, 76.2], [135, 74.2], [131.4, 72.5], [127.6, 71.2], [123.7, 70.3], [119.9, 70.1], [116, 70.1], [112, 70.4], [108, 70.3], [104, 69.9], [100, 69.6], [96, 69.6], [92.4, 70.6], [89.4, 71.6], [86.5, 73], [83.1, 74.7], [79.6, 75.3], [76.1, 75.2], [72.6, 73.9], [70.1, 71.5], [69.4, 68.2], [70.5, 64.8], [73.4, 62.5], [75.4, 59.8], [77, 57], [76.2, 53.1], [74.3, 50.5], [71.2, 49.2], [68, 48.9], [64, 49.4], [60.3, 49.9], [57.1, 52], [54.1, 53.9], [52.4, 56.4], [51.8, 59.6], [50.9, 62.8], [50.6, 66], [50.2, 70], [49.9, 73.6], [49.6, 77.2], [49.3, 81], [48.9, 84.9], [48.6, 88.9], [48.2, 92.5], [47.4, 95.6], [46.2, 98.6], [44.4, 102.1], [41.8, 104.9], [38.5, 106.9], [34.9, 108], [31.5, 108.3], [28.1, 108.2], [24.1, 107.5], [21, 106.4], [18.2, 104.5], [15.8, 101.7], [13.8, 98.7], [12.5, 95.9], [11.8, 93], [11.1, 89.4], [10.6, 85.8], [10.4, 82], [10.3, 78], [10.2, 74], [10.3, 70.2], [10.3, 66.6], [10.4, 63], [10.2, 59], [10.3, 55], [10.3, 53]];
+
+  // ---------- สนามแข่งแบบวางเส้นแยกเอง ----------
+  const CUM = [0]; for (let i = 1; i < LOOP.length; i++) CUM.push(CUM[i - 1] + Math.hypot(LOOP[i][0] - LOOP[i - 1][0], LOOP[i][1] - LOOP[i - 1][1]));
+  const TRACK_LEN = CUM[CUM.length - 1];
+  function pointAt(t) {   // จุดบนวงที่ระยะ t cm จากจุดเริ่ม
+    t = ((t % TRACK_LEN) + TRACK_LEN) % TRACK_LEN;
+    let i = 1; while (i < CUM.length - 1 && CUM[i] < t) i++;
+    const f = (t - CUM[i - 1]) / (CUM[i] - CUM[i - 1] || 1), a = LOOP[i - 1], b = LOOP[i];
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+  }
+  function trackOf(q) {   // ระยะบนวงของจุดที่ใกล้ q ที่สุด และระยะห่างจากเส้น
+    let best = { d: 1e9, t: 0 };
+    for (let i = 0; i + 1 < LOOP.length; i++) {
+      const [ax, ay] = LOOP[i], [bx, by] = LOOP[i + 1], dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1e-9;
+      const f = Math.max(0, Math.min(1, ((q[0] - ax) * dx + (q[1] - ay) * dy) / L2));
+      const d = Math.hypot(q[0] - ax - f * dx, q[1] - ay - f * dy);
+      if (d < best.d) best = { d, t: CUM[i] + f * Math.sqrt(L2) };
+    }
+    return best;
+  }
+  const BOX = [1, 50, 21, 70];
+  // js = [{ t, side: 'L' | 'R' | 'LR', cans: { L, R } }] เรียงตามระยะ
+  function customField(js) {
+    const lines = [LOOP, [[1, 50], [21, 50]], [[1, 70], [21, 70]], [[1, 50], [1, 70]], [[21, 50], [21, 70]]];
+    const cans = [], marks = [];
+    js.slice().sort((a, b) => a.t - b.t).forEach((j, i) => {
+      const q = pointAt(j.t);
+      for (const sd of j.side) {
+        const b = branch(LOOP, q, sd, 13, 5);
+        lines.push(...b.lines);
+        if (j.cans[sd]) cans.push({ ...b.can, color: j.side === 'LR' ? 'orange' : 'yellow', id: (i + 1) + sd });
+      }
+      marks.push({ name: String(i + 1), x: q[0], y: q[1] });
+    });
+    return { lines, cans, marks, box: BOX, bounds: [0, 0, 240, 120] };
+  }
+  function canSpots(js) {   // ตำแหน่งกระป๋อง (มี/ไม่มี) ของทุกเส้นแยก ใช้ตอนคลิกแก้สนาม
+    const out = [];
+    js.forEach(j => { const q = pointAt(j.t); for (const sd of j.side) out.push({ j, sd, ...branch(LOOP, q, sd, 13, 5).can }); });
+    return out;
+  }
+  // สนามแข่งล่าสุด (Layout C จาก .wolf/field-map.md) ตำแหน่งตามรูปจริง
+  const RACE_C = [[[11, 39], 'R', 'R'], [[80, 26], 'LR', 'L'], [[131, 42], 'L', ''], [[186, 75], 'R', 'R'], [[170, 34], 'LR', 'LR'], [[207, 13], 'R', ''],
+    [[226, 69], 'R', ''], [[156, 89], 'LR', 'LR'], [[122, 70], 'R', ''], [[71, 74.5], 'L', 'L'], [[43, 106], 'L', ''], [[11, 90], 'R', '']]
+    .map(([q, side, c]) => ({ t: Math.round(trackOf(q).t), side, cans: { L: c.includes('L'), R: c.includes('R') } }));
+  const SIDE_TH = { L: 'เส้นแยกซ้าย', R: 'เส้นแยกขวา', LR: 'เส้นแยกคู่' };
+  // ช่วงโค้งแคบบนวง: โค้งขวาหลอก FLR ได้ โค้งซ้ายหลอก FLL ได้
+  const CURVES = (() => {
+    const hd = i => Math.atan2(LOOP[i + 1][1] - LOOP[i][1], LOOP[i + 1][0] - LOOP[i][0]);
+    const zs = [];
+    for (let i = 1; i < LOOP.length - 2; i++) {
+      let d = hd(i + 1) - hd(i - 1); while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+      const k = d / (CUM[i + 1] - CUM[i - 1] || 1);   // rad/cm บวก = เลี้ยวขวา (แกน y ชี้ลง)
+      if (Math.abs(k) < 0.05) continue;
+      const side = k > 0 ? 'R' : 'L', last = zs[zs.length - 1];
+      if (last && last.side === side && CUM[i] - last.t1 < 10) last.t1 = CUM[i]; else zs.push({ side, t0: CUM[i], t1: CUM[i] });
+    }
+    return zs;
+  })();
+  const CM_PER_MS = 0.055;   // ความเร็วหุ่นจำลองที่ Speed_motor(240) (หุ่นจริงต้องวัดเอง)
+  // เวลา FL_time ที่ต้องดักก่อน FLR/FLL: วิ่งไปถึงกึ่งกลางระหว่างจุดออกโค้งสุดท้ายกับเส้นแยก
+  function guardFor(P, B, side, v = CM_PER_MS) {
+    const zs = CURVES.filter(z => z.side === side && z.t1 > P && z.t1 < B);
+    if (!zs.length) return null;
+    const A = Math.max(...zs.map(z => z.t1));
+    return { ms: Math.max(100, Math.round(((A + B) / 2 - P) / v / 50) * 50), tight: B - A < 12 };
+  }
+  function missionFor(js, v = CM_PER_MS) {   // สร้าง Mission ตั้งต้น: หนึ่งแถวต่อหนึ่งเส้นแยก เรียงตามทางวิ่ง
+    let P = trackOf([11, 50]).t;   // ขอบบนกล่องเริ่ม
+    const rows = js.slice().sort((a, b) => a.t - b.t).map((j, i) => {
+      const n = i + 1, c = j.cans, any = (j.side.includes('L') && c.L) || (j.side.includes('R') && c.R);
+      let go = j.side === 'LR' ? 'FL();' : j.side === 'R' ? 'FLR();' : 'FLL();', warn = '';
+      const gd = j.side === 'LR' ? null : guardFor(P, j.t, j.side, v);
+      if (gd) { go = `FL_time(${gd.ms}); ` + go; warn = gd.tight ? ' (ดักโค้ง: เส้นแยกชิดโค้ง ต้องจูนเวลา)' : ' (ดักโค้ง)'; }
+      P = j.t;
+      let act = 'cross();', note = 'ไม่มีกระป๋อง วิ่งผ่าน';
+      if (any) {
+        act = 'cross_down(); ' + (j.side === 'LR' ? (c.L && c.R ? 'can_LR();' : c.L ? 'can_L();' : 'can_R();') : j.side === 'R' ? 'can_R();' : 'can_L();');
+        note = j.side === 'LR' ? (c.L && c.R ? 'กระป๋องสองข้าง' : c.L ? 'กระป๋องซ้าย' : 'กระป๋องขวา') : 'มีกระป๋อง';
+      }
+      const code = `  ${go} ${act}`;
+      return code + ' '.repeat(Math.max(1, 39 - code.length)) + `// ${n} ${SIDE_TH[j.side]} ${note}${warn}`;
+    });
+    return `void Mission() {
+  Set_kp(30);           // ความแรงการแก้เส้น
+  Speed_motor(240);     // ความเร็ววิ่งตามเส้น
+  speed_trun = 150;     // ความเร็วเลี้ยว TL / TR
+  speed_cross = 95;     // ความเร็ว cross_down
+  time_cross = 200;     // เวลา cross_down (ms) จูนสำหรับตัวจำลอง
+  // FL_time(...) หน้า FLR/FLL = วิ่งผ่านโค้งที่อาจหลอกเซนเซอร์ก่อน เวลานี้คิดจากหุ่นจำลอง หุ่นจริงต้องจูนเอง
+
+  FL(); cross();                       // ขอบบนกล่องเริ่ม วิ่งข้ามไป
+${rows.join('\n')}
+  FL(); cross();                       // ขอบล่างกล่อง วิ่งข้ามเข้าไป
+  Speed_motor(120); FL(); B();         // ช้าลง เซนเซอร์เจอขอบบนแล้วเบรกทันที
+  GB(100);                             // ถอยนิดเดียว ให้ทั้งคันอยู่ในกล่อง 20x20
+}`;
+  }
+
   function layoutC() {
     const lines = [LOOP, [[1, 50], [21, 50]], [[1, 70], [21, 70]], [[1, 50], [1, 70]], [[21, 50], [21, 70]]];
     const cans = [];
@@ -1133,7 +1303,7 @@ const SIM = (() => {
   Speed_motor(120); FL(); B();         // ช้าลง เซนเซอร์เจอขอบบนแล้วเบรกทันที
   GB(100);                             // ถอยนิดเดียว ให้ทั้งคันอยู่ในกล่อง 20x20
 }`;
-  return { createRun, runner, parse, layoutC, practice, MISSION_P, branch, LOOP, MISSION_C, LINE_W, SENS_FWD, SENS_LAT, TRACK, FRONT, REAR, HALF_W };
+  return { createRun, runner, parse, layoutC, practice, MISSION_P, customField, canSpots, missionFor, CURVES, CM_PER_MS, trackOf, pointAt, TRACK_LEN, RACE_C, BOX, branch, LOOP, MISSION_C, LINE_W, SENS_FWD, SENS_LAT, TRACK, FRONT, REAR, HALF_W };
 })();
 if (typeof module !== 'undefined') module.exports = SIM;
 
@@ -1184,6 +1354,28 @@ if (typeof module !== 'undefined') module.exports = SIM;
       for (const m of f.marks) { const [tx, ty] = tangentAt(f.lines[0], m); const [a, b] = P(m.x - tx * 7 + ty * 4.5, m.y - ty * 7 - tx * 4.5); ctx.fillText(m.name, a, b); }
     }
     // ทางเดินหุ่น
+    if (opts.ref != null) {   // เส้นตรงอ้างอิง (ประ)
+      const [, ry] = P(0, opts.ref); ctx.setLineDash([6, 6]); ctx.strokeStyle = 'rgba(30,27,75,.35)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, ry); ctx.lineTo(W, ry); ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (opts.path && opts.path.length > 1) {   // ช่วงที่กำลังวัดเวลา
+      ctx.strokeStyle = 'rgba(234,88,12,.55)'; ctx.lineWidth = SIM.LINE_W * s * 2.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); opts.path.forEach(([x, y], i) => { const [a, b] = P(x, y); i ? ctx.lineTo(a, b) : ctx.moveTo(a, b); }); ctx.stroke();
+    }
+    for (const pin of opts.pins || []) {
+      const [a, b] = P(pin.x, pin.y);
+      ctx.fillStyle = COL.o; ctx.beginPath(); ctx.arc(a, b, 3.2 * s, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.max(11, 3.4 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(pin.label, a, b + .2 * s);
+    }
+    for (const g of opts.ghosts || []) {   // รอบที่วิ่งไปแล้ว
+      if (g.pts.length < 2) continue;
+      ctx.strokeStyle = g.best ? COL.o : 'rgba(79,70,229,.45)'; ctx.lineWidth = g.best ? Math.max(3, .8 * s) : Math.max(1.5, .4 * s); ctx.lineCap = 'round';
+      ctx.beginPath(); g.pts.forEach(([x, y], i) => { const [a, b] = P(x, y); i ? ctx.lineTo(a, b) : ctx.moveTo(a, b); }); ctx.stroke();
+      const [ex, ey] = P(...g.pts[g.pts.length - 1]);
+      ctx.fillStyle = g.best ? COL.o : COL.ink3; ctx.font = `600 ${Math.max(11, 2.8 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(g.label, ex + g.dir * 3 * s, ey);
+    }
     const tr = run.r.trail;
     if (tr.length > 1) {
       ctx.strokeStyle = 'rgba(79,70,229,.4)'; ctx.lineWidth = Math.max(1.5, .45 * s); ctx.lineCap = 'round';
@@ -1314,7 +1506,7 @@ if (typeof module !== 'undefined') module.exports = SIM;
         p.render();
         if (p.R.status !== 'running') { p.playing = false; players.delete(p); onEnd && onEnd(p.R); }
       },
-      render() { fitCanvas(canvas); draw(canvas, p.R.run, view(p.R)); onFrame && onFrame(p.R); },
+      render() { fitCanvas(canvas); draw(canvas, p.R.run, view(p.R), p.R.drawOpts || {}); onFrame && onFrame(p.R); },
     };
     new ResizeObserver(() => p.R && p.render()).observe(canvas);
     return p;
@@ -1447,6 +1639,67 @@ if (typeof module !== 'undefined') module.exports = SIM;
   }
   { const el = $('#calibDemo'); if (el) mountCalib(el); }
 
+  // ---------- เดโมหาค่าล้อ tune_trim / tune_GB ----------
+  function mountTune(el) {
+    const gb = el.dataset.tune === 'gb';
+    el.innerHTML = `<div class="stage"><canvas width="1200" height="500" role="img" aria-label="หุ่นจำลองวิ่งทดสอบหลายรอบ แต่ละรอบปรับความเร็วล้อทีละ 5"></canvas></div>
+      <div class="ctrl"><button class="btn go" type="button">${label('play', 'เล่น')}</button>
+      ${gb ? '' : '<div class="seg" aria-label="หุ่นเบ้ไปทางไหน"><button type="button" data-s="R" aria-pressed="true">หุ่นเบ้ขวา: tune_trim(true)</button><button type="button" data-s="L">หุ่นเบ้ซ้าย: tune_trim(false)</button></div>'}
+      <div class="seg" aria-label="ความเร็ว"><button type="button" data-v="1">ช้า</button><button type="button" data-v="3" aria-pressed="true">เร็ว</button></div></div>
+      <div class="tune-runs"></div><p class="msg tune-msg" aria-live="polite"></p>`;
+    const cv = $('canvas', el), btn = $('.btn', el), runsEl = $('.tune-runs', el), msg = $('.tune-msg', el);
+    let side = 'R';
+    const vals = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(k => gb ? 100 + 5 * k : 5 * k);
+    runsEl.innerHTML = vals.map((v, k) => `<span>รอบ ${k + 1}<b>${v}</b></span>`).join('');
+    const chips = $$('span', runsEl);
+    const y0 = 30, x0 = gb ? 104 : 10;
+    function build() {
+      const weak = gb ? { weakR: .1 } : side === 'R' ? { weakR: .06 } : { weakL: .06 };
+      const run = SIM.createRun({ lines: [], cans: [], bounds: [0, 0, 120, 60] }, { x: x0, y: y0, th: 0 }, weak);
+      const ghosts = []; let k = -1, status = 'running';
+      const g = (function* () {
+        yield* run.fw.Speed_motor(240);
+        for (k = 0; k < vals.length; k++) {
+          Object.assign(run.r, { x: x0, y: y0, th: 0, vl: 0, vr: 0, trail: [] });   // วางหุ่นกลับที่เดิม
+          if (gb) { yield* run.fw.Speed_LR(vals[k], 100); yield* run.fw.GB(1500); }
+          else { const t = vals[k]; if (side === 'R') yield* run.fw.Speed_LR(240, 240 - t); else yield* run.fw.Speed_LR(240 - t, 240); yield* run.fw.GO(1500); }
+          ghosts.push({ pts: run.r.trail.slice(), label: String(k + 1), dy: Math.abs(run.r.y - y0) + Math.abs(Math.sin(run.r.th)) * 10, dir: gb ? -1 : 1 });
+          yield* run.fw.STOP(400);   // หุ่นหยุดรอกดปุ่ม
+        }
+      })();
+      return {
+        run, ghosts, get k() { return k; }, get status() { return status; },
+        get drawOpts() { return { ref: y0, ghosts: status === 'done' ? ghosts.map((g, i) => ({ ...g, best: i === bestOf(ghosts) })) : ghosts }; },
+        advance(ms) { const end = run.r.t + ms; while (status === 'running' && run.r.t < end) if (g.next().done) status = 'done'; return status; },
+      };
+    }
+    const bestOf = gs => gs.reduce((b, g, i) => g.dy < gs[b].dy ? i : b, 0);
+    const p = makePlayer({
+      canvas: cv, speed: 3, view: () => [0, 5, 120, 55], build,
+      onFrame(R) { chips.forEach((c, i) => { c.className = R.status === 'done' ? (i === bestOf(R.ghosts) ? 'best' : 'done') : i < R.k ? 'done' : i === R.k ? 'cur' : ''; }); },
+      onEnd(R) {
+        btn.innerHTML = label('reset', 'เล่นอีกครั้ง');
+        const b = bestOf(R.ghosts), v = vals[b];
+        msg.className = 'msg tune-msg ok';
+        msg.textContent = gb ? `รอบ ${b + 1} ถอยตรงที่สุด → ใส่ Speed_LR(${v}, 100) ก่อนใช้ GB()`
+          : `รอบ ${b + 1} วิ่งตรงที่สุด → ใส่ ${side === 'R' ? 'trim_L' : 'trim_R'} = ${v};`;
+      },
+    });
+    const idle = () => { msg.className = 'msg tune-msg'; msg.textContent = gb ? 'กด เล่น: หุ่นถอยหลัง 9 รอบ ล้อขวาแรงขึ้นทีละ 5 (หุ่นจำลองตั้งให้ล้อขวาอ่อนกว่า)' : 'กด เล่น: หุ่นเดินหน้า 9 รอบ แต่ละรอบลดล้อข้างที่แรงกว่าลงทีละ 5 (หุ่นจำลองตั้งให้ล้อหนึ่งอ่อนกว่า)'; };
+    btn.onclick = () => {
+      if (p.playing) { p.pause(); btn.innerHTML = label('play', 'เล่นต่อ'); return; }
+      if (!p.R || p.R.status !== 'running') p.reset();
+      msg.textContent = ''; p.play(); btn.innerHTML = label('pause', 'หยุดชั่วคราว');
+    };
+    $$('.seg', el).forEach(sg => $$('button', sg).forEach(b => b.onclick = () => {
+      $$('button', sg).forEach(x => x.setAttribute('aria-pressed', x === b));
+      if (b.dataset.v) { p.speed = +b.dataset.v; return; }
+      side = b.dataset.s; p.reset(); idle(); btn.innerHTML = label('play', 'เล่น');
+    }));
+    p.reset(); idle();
+  }
+  $$('[data-tune]').forEach(mountTune);
+
   // ---------- hero ----------
   {
     const cv = $('#hero'), now = $('#heroNow'), score = $('#heroScore'), tog = $('#heroToggle');
@@ -1517,13 +1770,44 @@ if (typeof module !== 'undefined') module.exports = SIM;
     const root = $('#playground'), cv = $('canvas', root), ta = $('textarea', root), view = $('.codeview', root), errs = $('.errs', root);
     const cells = $('.rail-cells', root), ro = buildReadout($('.readout', root)), score = $('.score', root);
     const bRun = $('[data-act=run]', root), bStep = $('[data-act=step]', root), bReset = $('[data-act=reset]', root);
-    const DEF = { practice: SIM.MISSION_P, layoutC: SIM.MISSION_C };
-    let fieldName = 'practice', stepTo = -1;
+    // สนามแข่งแบบวางเส้นแยกเอง: จำไว้ในเบราว์เซอร์นี้
+    const KEY = 'trt-custom-race';
+    let js = SIM.RACE_C.map(j => ({ ...j, cans: { ...j.cans } }));
+    try { const v = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(v)) js = v; } catch (e) { /* ไม่มีที่เก็บ ใช้ค่าเริ่มต้น */ }
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(js)); } catch (e) { /* ไม่เป็นไร */ } };
+    const pwmIn = $('[data-k=pwm]', root), v255In = $('[data-k=v255]', root), spdOut = $('.spd-out', root), eta = $('.eta', root);
+    // ความเร็ว (cm/ms) เทียบส่วนจาก Speed_motor กับความเร็วที่ 255
+    const vNow = () => Math.max(1, Math.min(255, +pwmIn.value || 240)) / 255 * Math.max(5, +v255In.value || 58) / 1000;
+    const DEF = { practice: SIM.MISSION_P, custom: SIM.missionFor(js, vNow()) };
+    // ---- วัดเวลา: คลิกจุด A แล้วจุด B บนเส้น ----
+    const meas = { a: null, b: null };
+    const dist = () => (meas.b - meas.a + SIM.TRACK_LEN) % SIM.TRACK_LEN;
+    function measureOpts() {
+      if (fieldName !== 'custom' || meas.a == null) return {};
+      const pins = [{ label: 'A', ...xy(meas.a) }];
+      if (meas.b == null) return { pins };
+      const path = []; for (let d = 0; d <= dist(); d += 2) path.push(SIM.pointAt(meas.a + d));
+      path.push(SIM.pointAt(meas.b)); pins.push({ label: 'B', ...xy(meas.b) });
+      return { path, pins };
+    }
+    const xy = t => { const [x, y] = SIM.pointAt(t); return { x, y }; };
+    function showEta() {
+      if (meas.a == null) { eta.textContent = 'เลือกเครื่องมือ "วัดเวลา" แล้วคลิกจุดเริ่ม (A) กับจุดปลาย (B) บนเส้นสนาม'; return; }
+      if (meas.b == null) { eta.textContent = 'คลิกจุดปลาย (B) ต่อ ระยะนับตามทิศที่หุ่นวิ่ง'; return; }
+      const d = dist(), ms = Math.round(d / vNow() / 50) * 50;
+      eta.innerHTML = `ที่ Speed_motor(${pwmIn.value}) A → B ยาว <b>${Math.round(d)} cm</b> ตามเส้น ใช้เวลาประมาณ <b>${(ms / 1000).toFixed(1)} วินาที</b> → <code>FL_time(${ms});</code>`;
+    }
+    let fieldName = 'practice', stepTo = -1, mode = 'R';
+    const ed = $('.editor', root), hint = $('.hint', root);
     ta.value = DEF.practice;
     const lines = () => ta.value.split('\n');
     const p = makePlayer({
       canvas: cv, speed: 1, view: () => [0, 0, 240, 120],
-      build: () => SIM.runner(SIM[fieldName](), { x: 11, y: 62, th: -Math.PI / 2 }, ta.value),
+      build: () => {
+        const R = SIM.runner(fieldName === 'custom' ? SIM.customField(js) : SIM.practice(), { x: 11, y: 62, th: -Math.PI / 2 }, ta.value);
+        Object.defineProperty(R, 'drawOpts', { get: measureOpts });
+        return R;
+      },
       onFrame(R) {
         ro.update(R.run);
         const c = R.cmds[R.idx];
@@ -1582,7 +1866,60 @@ if (typeof module !== 'undefined') module.exports = SIM;
       $$('[data-field] button', root).forEach(x => x.setAttribute('aria-pressed', x === b));
       if (ta.value === DEF[fieldName]) ta.value = DEF[b.dataset.v];
       fieldName = b.dataset.v; p.pause(); editing(true); prepare(); setBtns();
+      ed.hidden = fieldName !== 'custom'; cv.classList.toggle('editable', fieldName === 'custom');
     });
+    // ---- แก้สนาม: คลิกบนเส้นเพื่อวาง/ลบเส้นแยก หรือใส่กระป๋อง ----
+    function changed(text) {
+      save(); hint.textContent = text;
+      if (ta.value === DEF.custom) ta.value = SIM.missionFor(js, vNow());   // ยังไม่ได้แก้โค้ดเอง: อัปเดตโค้ดตามสนาม
+      DEF.custom = SIM.missionFor(js, vNow());
+      p.pause(); editing(true); prepare(); setBtns();
+    }
+    const say = t => { hint.textContent = t; };
+    function toCm(e) {
+      const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) * cv.width / r.width, py = (e.clientY - r.top) * cv.height / r.height;
+      const s = Math.min(cv.width / 240, cv.height / 120), ox = (cv.width - 240 * s) / 2, oy = (cv.height - 120 * s) / 2;
+      return [(px - ox) / s, (py - oy) / s];
+    }
+    const inBoxZone = q => q[0] > SIM.BOX[0] - 8 && q[0] < SIM.BOX[2] + 8 && q[1] > SIM.BOX[1] - 8 && q[1] < SIM.BOX[3] + 8;
+    cv.addEventListener('click', e => {
+      if (fieldName !== 'custom') return;
+      const q = toCm(e);
+      if (mode === 'eta') {
+        const tk = SIM.trackOf(q);
+        if (tk.d > 8) return say('คลิกให้ใกล้เส้นสนามมากกว่านี้');
+        if (meas.a == null || meas.b != null) { meas.a = tk.t; meas.b = null; } else meas.b = tk.t;
+        showEta(); p.render(); return;
+      }
+      if (mode === 'can') {
+        const spot = SIM.canSpots(js).map(c => ({ ...c, d: Math.hypot(c.x - q[0], c.y - q[1]) })).sort((a, b) => a.d - b.d)[0];
+        if (!spot || spot.d > 7) return say('คลิกที่ปลายเส้นแยก ตรงที่วางกระป๋อง');
+        spot.j.cans[spot.sd] = !spot.j.cans[spot.sd];
+        return changed(spot.j.cans[spot.sd] ? 'ใส่กระป๋องแล้ว' : 'เอากระป๋องออกแล้ว');
+      }
+      if (mode === 'del') {
+        const hit = js.map(j => ({ j, d: Math.hypot(SIM.pointAt(j.t)[0] - q[0], SIM.pointAt(j.t)[1] - q[1]) })).sort((a, b) => a.d - b.d)[0];
+        if (!hit || hit.d > 8) return say('คลิกที่จุดแยกบนเส้นสนามที่ต้องการลบ');
+        js = js.filter(j => j !== hit.j);
+        return changed('ลบเส้นแยกแล้ว');
+      }
+      const tk = SIM.trackOf(q);
+      if (tk.d > 6) return say('คลิกให้ใกล้เส้นสนามมากกว่านี้');
+      const at = SIM.pointAt(tk.t);
+      if (inBoxZone(at)) return say('วางในกล่องเริ่มไม่ได้');
+      const near = js.some(j => { const dt = Math.abs(j.t - tk.t); return Math.min(dt, SIM.TRACK_LEN - dt) < 14; });
+      if (near) return say('ใกล้เส้นแยกอื่นเกินไป (ต้องห่างกันอย่างน้อย 14 cm)');
+      js.push({ t: Math.round(tk.t), side: mode, cans: { L: mode.includes('L'), R: mode.includes('R') } });
+      changed('วางเส้นแยกแล้ว พร้อมกระป๋อง (ใช้เครื่องมือ "กระป๋อง" เพื่อเอาออก)');
+    });
+    $$('[data-mode] button', root).forEach(b => b.onclick = () => { $$('[data-mode] button', root).forEach(x => x.setAttribute('aria-pressed', x === b)); mode = b.dataset.m; });
+    const spdShow = () => { spdOut.textContent = `≈ ${Math.round(vNow() * 1000)} cm/วินาที`; };
+    pwmIn.oninput = v255In.oninput = () => { spdShow(); if (ta.value === DEF.custom) ta.value = SIM.missionFor(js, vNow()); DEF.custom = SIM.missionFor(js, vNow()); showEta(); };
+    spdShow();
+    showEta();
+    $('[data-act=gen]', root).onclick = () => { ta.value = DEF.custom = SIM.missionFor(js, vNow()); changed('สร้าง Mission ตามสนามแล้ว ลองกดรันดู'); };
+    $('[data-act=def]', root).onclick = () => { js = SIM.RACE_C.map(j => ({ ...j, cans: { ...j.cans } })); changed('กลับเป็นสนามแข่งล่าสุดแล้ว'); };
+    $('[data-act=clear]', root).onclick = () => { js = []; changed('ล้างเส้นแยกทั้งหมดแล้ว'); };
     prepare(); setBtns();
   }
 

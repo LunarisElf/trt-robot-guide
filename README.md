@@ -8,3 +8,7 @@
 หุ่นในเว็บเป็นหุ่นจำลอง ใช้ดูว่าคำสั่งทำอะไร ตัวเลขเวลาที่ใช้ในเว็บเอาไปใส่หุ่นจริงตรงๆ ไม่ได้
 
 ฟอนต์ Mitr และ Mali ใช้สัญญาอนุญาต SIL Open Font License
+
+## โค้ดหุ่น
+
+ดาวน์โหลดได้ที่หน้า [Releases](https://github.com/LunarisElf/trt-robot-guide/releases/latest): `TRT_arduino_nano.zip` แตกไฟล์แล้วเปิด `TRT_arduino_nano.ino` ใน Arduino IDE (สองไฟล์ .ino ต้องอยู่ในโฟลเดอร์เดียวกัน)
