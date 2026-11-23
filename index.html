@@ -226,6 +226,10 @@ pre .c { color: #9aa3ad; } pre .k { color: #f0c34a; } pre .n { color: #f19a6a; }
 .play .stage { background: var(--vinyl); border-right: 1px solid var(--rule); }
 .play canvas { display: block; width: 100%; height: auto; }
 .play .side { display: flex; flex-direction: column; min-width: 0; }
+.play { overflow: clip; }   /* ให้สนาม sticky ได้ */
+.play .stage > canvas { position: sticky; top: 0; }   /* เลื่อนดูโค้ดแล้วสนามยังอยู่บนจอ */
+.play [data-field] { width: 100%; }
+.play [data-field] button { flex: 1 1 auto; white-space: nowrap; padding: 0 8px; font-size: 13.5px; }
 .play .tools { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-bottom: 1px solid var(--rule); align-items: center; }
 .play textarea, .play .codeview {
   flex: 1 1 auto; min-height: 340px; width: 100%; margin: 0; border: 0; resize: vertical; padding: 12px 14px;
@@ -647,7 +651,6 @@ code { border-radius: 6px; }
         <dt>ใช้ตอนไหน</dt><dd>หลังเลี้ยวเข้าเส้นแยกที่มีกระป๋อง</dd>
         <dt>เกิดอะไร</dt><dd>กระป๋องขยับออกจากที่เดิม หุ่นหยุดเลยปลายเส้นแยกไปนิด</dd></dl>
         <div class="sim" data-demo="push"></div>
-        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>หลังใช้ push() ครั้งแรก ความเร็ววิ่งตามเส้นจะเป็น 240 ตลอด ถ้าอยากให้ช้าลง ใส่ <code>Speed_motor(...)</code> ใหม่</p></div>
       </article>
 
       <h3 class="group-h" id="g-turn">เลี้ยว</h3>
@@ -760,8 +763,9 @@ code { border-radius: 6px; }
     <section class="sec" id="play">
       <h2>สนามทดลอง</h2>
       <div class="col">
-        <p class="lede">เขียน Mission เองแล้วกดรัน ใช้คำสั่งได้ทุกตัวในหน้านี้ รวมถึง <code>speed_trun = 150;</code> แบบกำหนดค่า และ <code>return;</code> เพื่อหยุดทดสอบครึ่งทาง</p>
+        <p class="lede">เขียน Mission เองแล้วกดรัน ใช้คำสั่งได้ทุกตัวในหน้านี้ รวมถึง <code>speed_trun = 150;</code> <code>can_cm = 30;</code> แบบกำหนดค่า และ <code>return;</code> เพื่อหยุดทดสอบครึ่งทาง</p>
         <p><b>สนามฝึก</b> เส้นแยกอยู่บนทางตรงหมด ภารกิจตัวอย่างดันครบ 6 ใบ <b>สนามแข่ง (แก้ได้)</b> วาดตามรูปสนามจริง วางเส้นแยกเดี่ยวหรือเส้นแยกคู่เองได้ แล้วกด <b>สร้าง Mission ให้</b> เพื่อได้โค้ดตั้งต้น ถ้าระหว่างทางมีโค้งที่อาจหลอก FLR / FLL (โค้งขวาหลอก FLR โค้งซ้ายหลอก FLL) โค้ดจะใส่ <code>FL_time(...)</code> ดักไว้ข้างหน้าให้เอง เวลาที่ใส่คิดจากหุ่นจำลอง ใช้กับหุ่นจริงต้องจูนใหม่</p>
+              <p class="lvl-hi"><b>สนามระดับสูง</b> <span class="tag new">ใหม่</span> ตำแหน่งเส้นแยกเหมือนสนามแข่ง (แก้ได้) แต่กระป๋องสุ่มที่ใหม่ทุกครั้งที่กดรันรอบใหม่ เส้นแยกที่ไม่มีกระป๋องคือแยกหลอก Mission ตั้งต้นใช้ <code>FLJ(); can_auto();</code> ทุกแยก ตอนหุ่นวัด ultrasonic จะเห็นกรวยหน้าหุ่นกับระยะที่วัดได้</p>
       </div>
       <div class="play" id="playground">
         <div class="stage"><canvas width="1200" height="600" aria-label="สนามทดลอง"></canvas>
@@ -781,8 +785,9 @@ code { border-radius: 6px; }
             <button class="btn go" data-act="run" type="button"></button>
             <button class="btn" data-act="step" type="button"></button>
             <button class="btn" data-act="reset" type="button"></button>
+            <button class="btn" data-act="shuffle" type="button" hidden>สุ่มกระป๋องใหม่</button>
             <div class="seg" data-speed aria-label="ความเร็วจำลอง"><button type="button" data-v="1" aria-pressed="true">1×</button><button type="button" data-v="2">2×</button><button type="button" data-v="4">4×</button></div>
-            <div class="seg" data-field aria-label="เลือกสนาม"><button type="button" data-v="practice" aria-pressed="true">สนามฝึก</button><button type="button" data-v="custom">สนามแข่ง (แก้ได้)</button></div>
+            <div class="seg" data-field aria-label="เลือกสนาม"><button type="button" data-v="practice" aria-pressed="true">สนามฝึก</button><button type="button" data-v="custom">สนามแข่ง (แก้ได้)</button><button type="button" data-v="high" class="lvl-hi">สนามระดับสูง</button></div>
           </div>
           <textarea spellcheck="false" aria-label="โค้ด Mission"></textarea>
           <ol class="codeview" hidden></ol>
@@ -800,7 +805,6 @@ code { border-radius: 6px; }
       <ol class="tips">
         <li><span class="can"></span><div><h3>เลือกคำสั่งที่จบด้วยเซนเซอร์ก่อนเสมอ</h3><p>FL, FLR, FLL, TL, TR หยุดตรงที่เดิมทุกรอบ ส่วน FL_time, GO, GB, R, L ระยะเปลี่ยนตามแบต ถ้ามีเส้นแยกว่างระหว่างทาง ใช้เป็นจุดอ้างอิงด้วย <code>FLR(); cross();</code> แทนการวิ่งตามเวลายาวๆ</p></div></li>
         <li><span class="can" style="--can:var(--can-o)"></span><div><h3>แบตต่ำ = เลี้ยวไม่สุด และระยะสั้นลง <span class="tag o">เจอจริง</span></h3><p>ซ้อมนานแบตตก หุ่นเลี้ยวได้มุมน้อยลง คำสั่งตามเวลาไปไม่ถึง จูนและแข่งในช่วงแรงดันแบตเดียวกัน ระหว่างแข่งชาร์จได้ ชาร์จก่อนรอบจริงเสมอ และหยุดจูนเมื่อแบตต่ำกว่าช่วงนั้น</p></div></li>
-        <li><span class="can" style="--can:var(--can-o)"></span><div><h3>push() ทำให้ความเร็วเป็น 240 ตลอดไป</h3><p>ใน push() มี <code>Speed_motor(240)</code> หลังดันใบแรก ค่าที่ตั้งไว้บนสุดของ Mission หายไป ถ้าช่วงหลังมีโค้งแคบแล้วหุ่นหลุด ใส่ <code>Speed_motor(...)</code> ใหม่หลัง can_*</p></div></li>
         <li><span class="can"></span><div><h3>FL() ไม่เบรก</h3><p>FL, FLR, FLL, FL_time, cross จบแล้วล้อยังหมุนด้วยความเร็วเดิม ถ้าต้องการหยุดตรงแยก ตามด้วย <code>cross_down()</code> (มีเบรกข้างใน) หรือ <code>B()</code></p></div></li>
         <li><span class="can"></span><div><h3>เลี้ยวแล้วหุ่นเอียง? ปรับ time_cross</h3><p>cross_down ต้องพาเพลาล้อไปอยู่บนจุดแยกพอดี น้อยไป = เลี้ยวไม่ถึง ตัวเอียงเข้าเส้นแยก มากไป = เลี้ยวเกิน ลองในสนามทดลอง: แก้ <code>time_cross</code> แล้วดูมุมหลัง TL/TR</p></div></li>
         <li><span class="can"></span><div><h3>FL() ต้องเห็นซ้ายและขวาพร้อมกัน</h3><p>ถ้าแยกสี่วางเอียงหรือหุ่นเข้าแยกเฉียง C[0] กับ C[4] อาจไม่ดำพร้อมกัน แล้ว FL() วิ่งเลยไปแยกถัดไป ให้จับแขนข้างเดียวด้วย FLL()/FLR() แทน</p></div></li>
@@ -932,8 +936,9 @@ const SIM = (() => {
       Kp: 20, Ki: 0, Kd: 1, P: 0, I: 0, D: 0, PID_value: 0, previous_error: 0, previous_I: 0, error: 0,
       initial_motor_speed: 200, speed_L: 120, speed_R: 120, SPEED: 0, stopped: true, t_go: 0, RAMP_MS: 250,
       speed_cross: 100, speed_trun: 150, trim_L: opts.trim_L ?? 0, trim_R: opts.trim_R ?? 0, time_cross: 300,
-      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0,
+      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0, can_cm: 30, cm: 999,
     };
+    let seen_L = false, seen_R = false;   // cross_down รอบล่าสุดเห็นแขนซ้าย/ขวา
     const sensorPos = i => {
       const c = Math.cos(r.th), s = Math.sin(r.th);
       return [r.x + c * SENS_FWD + Math.sin(r.th) * SENS_LAT[i], r.y + s * SENS_FWD - Math.cos(r.th) * SENS_LAT[i]];
@@ -941,6 +946,17 @@ const SIM = (() => {
     const noise = () => (Math.random() - 0.5) * 40;
     function analogRead(i) { const [x, y] = sensorPos(i); return Math.round((onBlack(field, x, y) ? BLACK : WHITE) + noise()); }
 
+    // ultrasonic ด้านหน้า: ระยะถึงกระป๋องที่ใกล้สุดในกรวย ±15° (ไม่จำลองขอบสนาม/คน)
+    function sonar() {
+      const c = Math.cos(r.th), s = Math.sin(r.th), fx = r.x + c * FRONT, fy = r.y + s * FRONT;
+      let best = 999;
+      for (const k of field.cans) {
+        const dx = k.x - fx, dy = k.y - fy, f = dx * c + dy * s, lat = -dx * s + dy * c;
+        if (f <= 0 || Math.abs(lat) > f * 0.268 + 3.3) continue;
+        best = Math.min(best, Math.max(0, Math.hypot(dx, dy) - 3.3));
+      }
+      return best <= 103 ? Math.floor(best) : 999;   // รอ echo สูงสุด 6 ms (~1 m)
+    }
     // ----- physics 1 ms -----
     function wheelTarget(in1, in2, pwm, weak) {
       if (in1 && in2) return { v: 0, tau: 15 };          // เบรก (มอเตอร์เกียร์มีแรงเฉื่อย ไหลต่อนิดหน่อย)
@@ -981,6 +997,7 @@ const SIM = (() => {
     // ----- firmware (คัดลอกจาก TRT_arduino_nano.ino) -----
     const C = st.C, S = st.S;
     function read_sensor() { for (let i = 0; i < 5; i++) C[i] = analogRead(i); }
+    const is_arm = i => C[i] < S[i] && C[2] < S[2];   // แขนแยกจริง = เซนเซอร์ริมกับ C[2] ดำพร้อมกัน
     function cheack_error() {
       if (C[1] > S[1] && C[2] < S[2] && C[3] > S[3]) st.error = 0;
       else if (C[2] < S[2] && C[1] < S[1]) st.error = 1;
@@ -1053,8 +1070,8 @@ const SIM = (() => {
       *FL_time(x) { const t0 = millis(); while (millis() - t0 < x) { read_sensor(); cheack_error(); follow_line(); yield* tick(); } PID_speed_reset(); },
       *cross() { yield* fw.FL_time(200); },
       *cross_down() {
-        st.initial_motor_speed = st.speed_cross; const t0 = millis();
-        while (millis() - t0 < st.time_cross) { read_sensor(); cheack_error_down(); follow_line(); yield* tick(); }
+        st.initial_motor_speed = st.speed_cross; const t0 = millis(); seen_L = seen_R = false;
+        while (millis() - t0 < st.time_cross) { read_sensor(); if (is_arm(0)) seen_L = true; if (is_arm(4)) seen_R = true; cheack_error_down(); follow_line(); yield* tick(); }
         PID_speed_reset(); yield* B();
       },
       *BL() { read_sensor(); while (C[0] > S[0] || C[4] > S[4]) { cheack_error(); follow_line_back(); yield* tick(); read_sensor(); } PID_speed_reset(); },
@@ -1113,9 +1130,43 @@ const SIM = (() => {
         if (cal.ok) for (let i = 0; i < 5; i++) S[i] = Math.floor((cal.min[i] + cal.max[i]) / 20) * 10;
       },
       *push() {
-        yield* fw.Speed_motor(240); const t0 = millis();
-        while (millis() - t0 < 300) { read_sensor(); cheack_error_down(); follow_line(); yield* tick(); }
+        const t0 = millis();
+        while (millis() - t0 < 307) { read_sensor(); cheack_error_down(); follow_line(); yield* tick(); }
         PID_speed_reset(); yield* B();
+      },
+      *FLJ(guard = 0) {
+        const t0 = millis(); read_sensor();
+        while (millis() - t0 < guard || !(is_arm(0) || is_arm(4))) { cheack_error(); follow_line(); yield* tick(); read_sensor(); }
+        PID_speed_reset();
+      },
+      *Read_ultarsonic() {
+        const d = sonar(); yield* delay(d < 999 ? Math.max(1, Math.round(d * 0.058)) : 6);
+        st.cm = d; r.sonar = { t: r.t, cm: d };
+      },
+      *FL_U(x) {
+        yield* fw.Read_ultarsonic();
+        while (st.cm > x) { read_sensor(); cheack_error(); follow_line(); yield* fw.Read_ultarsonic(); }
+        PID_speed_reset(); yield* B();
+      },
+      *_see(x) {
+        if (!x) x = st.can_cm;
+        yield* fw.Read_ultarsonic();
+        if (st.cm < x) return true;
+        r.beepAt = r.t; return false;   // ไม่เจอ: บี๊บ 1 ครั้ง
+      },
+      *_seq(v) { for (const n of v.split(' ')) yield* fw[n](); },
+      *cheak_can_L(x = 0) { yield* fw.TL(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TL'); else yield* fw.TR(); },
+      *cheak_can_R(x = 0) { yield* fw.TR(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TR'); else yield* fw.TL(); },
+      *cheak_can_LR(x = 0) {
+        yield* fw.TL();
+        if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down'); else yield* fw._seq('TR TR');
+        if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TR'); else yield* fw.TL();
+      },
+      *can_auto(x = 0) {
+        yield* fw.cross_down();
+        if (seen_L && seen_R) yield* fw.cheak_can_LR(x);
+        else if (seen_L) yield* fw.cheak_can_L(x);
+        else if (seen_R) yield* fw.cheak_can_R(x);
       },
       *slow() { yield* fw.Speed_motor(120); st.Kp = 20; },
       *normal() { st.Kp = 20; yield* fw.Speed_motor(240); },
@@ -1128,7 +1179,7 @@ const SIM = (() => {
       can_LR: 'TL push TR FL cross_down push TR FL cross_down TR',
     };
     for (const [k, v] of Object.entries(combo)) fw[k] = function* () { for (const n of v.split(' ')) yield* fw[n](); };
-    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd'];
+    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd', 'can_cm'];
 
     read_sensor();   // ค่าเริ่มต้นของเซนเซอร์ ให้ภาพแรกแสดงถูกก่อนกดเล่น
     return { r, st, field, fw, VARS, sensorPos, analogRead, onBlackAt: (x, y) => onBlack(field, x, y) };
@@ -1238,6 +1289,38 @@ const SIM = (() => {
       marks.push({ name: String(i + 1), x: q[0], y: q[1] });
     });
     return { lines, cans, marks, box: BOX, bounds: [0, 0, 240, 120] };
+  }
+  function shuffleCans(js, rnd = Math.random) {
+    const spots = []; js.forEach((j, i) => { for (const sd of j.side) spots.push([i, sd]); });
+    const n = Math.max(1, js.reduce((a, j) => a + (j.side.includes('L') && j.cans.L) + (j.side.includes('R') && j.cans.R), 0));
+    for (let i = spots.length - 1; i > 0; i--) { const k = Math.floor(rnd() * (i + 1)); [spots[i], spots[k]] = [spots[k], spots[i]]; }
+    const out = js.map(j => ({ ...j, cans: { L: false, R: false } }));
+    spots.slice(0, n).forEach(([i, sd]) => { out[i].cans[sd] = true; });
+    return out;
+  }
+  function missionHigh(js, v = CM_PER_MS) {   // ระดับสูง: ทุกแยกเขียนเหมือนกัน ultrasonic เช็คเอง
+    let P = trackOf([11, 50]).t;   // ขอบบนกล่องเริ่ม
+    const rows = js.slice().sort((a, b) => a.t - b.t).map((j, i) => {
+      const zs = CURVES.filter(z => z.t1 > P && z.t1 < j.t);   // FLJ ไม่สนแยกจนพ้นโค้ง (โค้งทั้งสองฝั่ง)
+      const g = zs.length ? Math.max(100, Math.round(((Math.max(...zs.map(z => z.t1)) + j.t) / 2 - P) / v / 50) * 50) : '';
+      P = j.t;
+      const code = `  FLJ(${g}); can_auto();`;
+      return code + ' '.repeat(Math.max(1, 39 - code.length)) + `// ${i + 1} ${SIDE_TH[j.side]}${g ? ' (ดักโค้ง)' : ''}`;
+    });
+    return `void Mission() {
+  Set_kp(30);           // ความแรงการแก้เส้น
+  Speed_motor(240);     // ความเร็ววิ่งตามเส้น
+  speed_trun = 150;     // ความเร็วเลี้ยว TL / TR
+  speed_cross = 95;     // ความเร็ว cross_down
+  time_cross = 200;     // เวลา cross_down (ms) จูนสำหรับตัวจำลอง
+  can_cm = 30;          // ระยะที่นับว่ามีกระป๋อง (cm)
+
+  FL(); cross();                       // ขอบบนกล่องเริ่ม วิ่งข้ามไป
+${rows.join('\n')}
+  FL(); cross();                       // ขอบล่างกล่อง วิ่งข้ามเข้าไป
+  Speed_motor(120); FL(); B();         // ช้าลง เซนเซอร์เจอขอบบนแล้วเบรกทันที
+  GB(100);                             // ถอยนิดเดียว ให้ทั้งคันอยู่ในกล่อง 20x20
+}`;
   }
   function canSpots(js) {   // ตำแหน่งกระป๋อง (มี/ไม่มี) ของทุกเส้นแยก ใช้ตอนคลิกแก้สนาม
     const out = [];
@@ -1377,7 +1460,7 @@ ${rows.join('\n')}
   Speed_motor(120); FL(); B();         // ช้าลง เซนเซอร์เจอขอบบนแล้วเบรกทันที
   GB(100);                             // ถอยนิดเดียว ให้ทั้งคันอยู่ในกล่อง 20x20
 }`;
-  return { createRun, runner, parse, layoutC, practice, MISSION_P, customField, canSpots, missionFor, CURVES, CM_PER_MS, trackOf, pointAt, TRACK_LEN, RACE_C, BOX, branch, LOOP, MISSION_C, LINE_W, SENS_FWD, SENS_LAT, TRACK, FRONT, REAR, HALF_W };
+  return { createRun, runner, parse, layoutC, practice, MISSION_P, customField, canSpots, missionFor, shuffleCans, missionHigh, CURVES, CM_PER_MS, trackOf, pointAt, TRACK_LEN, RACE_C, BOX, branch, LOOP, MISSION_C, LINE_W, SENS_FWD, SENS_LAT, TRACK, FRONT, REAR, HALF_W };
 })();
 if (typeof module !== 'undefined') module.exports = SIM;
 
@@ -1513,6 +1596,22 @@ if (typeof module !== 'undefined') module.exports = SIM;
       ctx.lineWidth = .3; ctx.strokeStyle = blk ? '#fff' : COL.ink; ctx.stroke();
     });
     ctx.restore();
+    const so = r.sonar;
+    if (so && r.t - so.t < 400) {   // กรวย ultrasonic ตอนเพิ่งวัด
+      const L = so.cm < 999 ? so.cm : 30, w = L * 0.268, c = Math.cos(r.th), sn = Math.sin(r.th);
+      ctx.save(); ctx.translate(a, b); ctx.rotate(r.th); ctx.scale(s, s);
+      ctx.fillStyle = so.cm < 999 ? 'rgba(234,88,12,.22)' : 'rgba(79,70,229,.13)';
+      ctx.beginPath(); ctx.moveTo(F, 0); ctx.lineTo(F + L, -w); ctx.lineTo(F + L, w); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      const [tx, ty] = P(r.x + c * (F + L + 5), r.y + sn * (F + L + 5));
+      ctx.fillStyle = so.cm < 999 ? COL.o : COL.ink3; ctx.font = `600 ${Math.max(11, 3 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(so.cm < 999 ? so.cm + ' cm' : 'ไม่เจอ', tx, ty);
+    }
+    if (r.beepAt != null && r.t - r.beepAt < 700) {
+      const [tx, ty] = P(r.x, r.y - 15);
+      ctx.fillStyle = COL.o; ctx.font = `700 ${Math.max(12, 3.4 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('บี๊บ', tx, ty);
+    }
   }
   function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
 
@@ -1852,7 +1951,9 @@ if (typeof module !== 'undefined') module.exports = SIM;
     const pwmIn = $('[data-k=pwm]', root), v255In = $('[data-k=v255]', root), spdOut = $('.spd-out', root), eta = $('.eta', root);
     // ความเร็ว (cm/ms) เทียบส่วนจาก Speed_motor กับความเร็วที่ 255
     const vNow = () => Math.max(1, Math.min(255, +pwmIn.value || 240)) / 255 * Math.max(5, +v255In.value || 58) / 1000;
-    const DEF = { practice: SIM.MISSION_P, custom: SIM.missionFor(js, vNow()) };
+    const DEF = { practice: SIM.MISSION_P, custom: SIM.missionFor(js, vNow()), high: SIM.missionHigh(js) };
+    let hiJs = SIM.shuffleCans(js);   // สนามระดับสูง: กระป๋องที่สุ่มไว้รอบนี้
+    const bShuf = $('[data-act=shuffle]', root);
     // ---- วัดเวลา: คลิกจุด A แล้วจุด B บนเส้น ----
     const meas = { a: null, b: null };
     const dist = () => (meas.b - meas.a + SIM.TRACK_LEN) % SIM.TRACK_LEN;
@@ -1878,7 +1979,7 @@ if (typeof module !== 'undefined') module.exports = SIM;
     const p = makePlayer({
       canvas: cv, speed: 1, view: () => [0, 0, 240, 120],
       build: () => {
-        const R = SIM.runner(fieldName === 'custom' ? SIM.customField(js) : SIM.practice(), { x: 11, y: 62, th: -Math.PI / 2 }, ta.value);
+        const R = SIM.runner(fieldName === 'custom' ? SIM.customField(js) : fieldName === 'high' ? SIM.customField(hiJs) : SIM.practice(), { x: 11, y: 62, th: -Math.PI / 2 }, ta.value);
         Object.defineProperty(R, 'drawOpts', { get: measureOpts });
         return R;
       },
@@ -1923,15 +2024,19 @@ if (typeof module !== 'undefined') module.exports = SIM;
       return R;
     }
     function editing(on) { ta.hidden = !on; view.hidden = on; }
+    function reshuffle() { if (fieldName === 'high') hiJs = SIM.shuffleCans(js); }
+    bShuf.onclick = () => { hiJs = SIM.shuffleCans(js); p.pause(); prepare(); setBtns(); };
+    // ปิดระดับสูง ขณะอยู่สนามระดับสูง: กลับไปสนามฝึก
+    document.addEventListener('trt-level', e => { if (!e.detail && fieldName === 'high') $('[data-field] button[data-v=practice]', root).click(); });
     bRun.onclick = () => {
       if (p.playing) { p.pause(); setBtns(); return; }
       if (!ta.hidden) { const R = prepare(); if (R.errors.length) { setBtns(); return; } editing(false); }
-      if (p.R.status !== 'running') { prepare(); }
+      if (p.R.status !== 'running') { reshuffle(); prepare(); }
       p.play(); ro.msg(''); setBtns();
     };
     bStep.onclick = () => {
       if (!ta.hidden) { const R = prepare(); if (R.errors.length) return; editing(false); }
-      if (p.R.status !== 'running') prepare();
+      if (p.R.status !== 'running') { reshuffle(); prepare(); }
       stepTo = p.R.idx + 1; p.play(); setBtns();
     };
     bReset.onclick = () => { p.pause(); editing(true); prepare(); setBtns(); ta.focus(); };
@@ -1939,14 +2044,16 @@ if (typeof module !== 'undefined') module.exports = SIM;
     $$('[data-field] button', root).forEach(b => b.onclick = () => {
       $$('[data-field] button', root).forEach(x => x.setAttribute('aria-pressed', x === b));
       if (ta.value === DEF[fieldName]) ta.value = DEF[b.dataset.v];
-      fieldName = b.dataset.v; p.pause(); editing(true); prepare(); setBtns();
-      ed.hidden = fieldName !== 'custom'; cv.classList.toggle('editable', fieldName === 'custom');
+      fieldName = b.dataset.v; reshuffle(); p.pause(); editing(true); prepare(); setBtns();
+      ed.hidden = fieldName !== 'custom'; cv.classList.toggle('editable', fieldName === 'custom'); bShuf.hidden = fieldName !== 'high';
     });
     // ---- แก้สนาม: คลิกบนเส้นเพื่อวาง/ลบเส้นแยก หรือใส่กระป๋อง ----
     function changed(text) {
       save(); hint.textContent = text;
       if (ta.value === DEF.custom) ta.value = SIM.missionFor(js, vNow());   // ยังไม่ได้แก้โค้ดเอง: อัปเดตโค้ดตามสนาม
       DEF.custom = SIM.missionFor(js, vNow());
+      if (ta.value === DEF.high) ta.value = SIM.missionHigh(js);
+      DEF.high = SIM.missionHigh(js);
       p.pause(); editing(true); prepare(); setBtns();
     }
     const say = t => { hint.textContent = t; };
@@ -2019,6 +2126,7 @@ if (typeof module !== 'undefined') module.exports = SIM;
     root.classList.toggle('lvl-hi-on', hi);
     btns.forEach(b => b.setAttribute('aria-pressed', String((b.dataset.lvl === 'hi') === hi)));
     try { localStorage.setItem(KEY, hi ? 'hi' : 'mid'); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('trt-level', { detail: hi }));
   };
   btns.forEach(b => b.addEventListener('click', () => set(b.dataset.lvl === 'hi')));
   let hi = false;
