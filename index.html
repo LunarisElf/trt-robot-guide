@@ -262,6 +262,14 @@ pre .c { color: #9aa3ad; } pre .k { color: #f0c34a; } pre .n { color: #f19a6a; }
 .tag.o { background: var(--can-o-2); color: var(--can-o-ink); }
 .tag.new { background: #dcfce7; color: #15803d; }
 .tag.hi { background: #e0e7ff; color: #3730a3; }
+/* สลับระดับกลาง / ระดับสูง */
+html:not(.lvl-hi-on) .lvl-hi { display: none; }
+html.lvl-hi-on .lvl-mid { display: none; }
+.lvl-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 26px 0 0; padding: 14px 16px; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; max-width: 860px; }
+.lvl-bar .seg button { min-height: 42px; padding: 0 18px; font-size: 15px; }
+.lvl-bar p { margin: 0; flex: 1 1 260px; color: var(--ink-2); font-size: 15px; }
+.rail .lvl-seg { margin: 0 0 16px; }
+.rail .lvl-seg button { min-height: 36px; padding: 0 12px; }
 
 footer.foot { max-width: 1240px; margin: 0 auto; padding: 30px 24px 60px; color: var(--ink-3); font-size: 14px; border-top: 1px solid var(--rule); }
 
@@ -409,6 +417,7 @@ code { border-radius: 6px; }
 <div class="page">
   <aside class="rail" aria-label="สารบัญ">
     <div class="start">START</div>
+    <div class="seg lvl-seg" role="group" aria-label="ระดับการแข่ง"><button type="button" data-lvl="mid" aria-pressed="true">ระดับกลาง</button><button type="button" data-lvl="hi" aria-pressed="false">ระดับสูง</button></div>
     <nav id="toc">
       <a href="#how">หุ่นทำงานยังไง</a>
       <a class="sub" href="#calibrate">วิธี calibrate</a>
@@ -416,12 +425,12 @@ code { border-radius: 6px; }
       <a href="#pid">วิ่งตามเส้นยังไง</a>
       <a href="#cmds">คำสั่งทั้งหมด</a>
       <a class="sub" href="#g-setup">ตั้งค่า</a>
+      <a class="sub lvl-hi" href="#g-high">ระดับสูง (ultrasonic) <span class="tag new">ใหม่</span></a>
       <a class="sub" href="#g-follow">วิ่งตามเส้น</a>
       <a class="sub" href="#g-cross">ข้ามแยก</a>
       <a class="sub" href="#g-can">ดันกระป๋อง</a>
       <a class="sub" href="#g-turn">เลี้ยว</a>
       <a class="sub" href="#g-stop">หยุด</a>
-      <a class="sub" href="#g-high">ระดับสูง (ultrasonic) <span class="tag new">ใหม่</span></a>
       <a class="sub" href="#g-tune">หาค่าล้อให้วิ่งตรง</a>
       <a class="sub" href="#g-blind">เคลื่อนที่ไม่ดูเส้น</a>
       <a class="sub" href="#g-back">ถอยหลัง (ไม่แนะนำ)</a>
@@ -511,6 +520,8 @@ code { border-radius: 6px; }
         <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>หุ่นในเว็บเป็นหุ่นจำลอง ใช้ดูว่าคำสั่งทำอะไร ตัวเลขเวลาที่ใช้ในเว็บเอาไปใส่หุ่นจริงตรงๆ ไม่ได้</p></div>
       </div>
 
+      <div class="lvl-bar"><div class="seg lvl-seg" role="group" aria-label="ระดับการแข่ง"><button type="button" data-lvl="mid" aria-pressed="true">ระดับกลาง</button><button type="button" data-lvl="hi" aria-pressed="false">ระดับสูง</button></div><p><span class="lvl-mid"><b>ระดับกลาง:</b> กระป๋องอยู่ที่เดิม เขียนทีละแยก ไม่ต้องใช้ ultrasonic</span><span class="lvl-hi"><b>ระดับสูง:</b> กระป๋องสลับทุกรอบ มีแยกหลอก ใช้ ultrasonic เช็คก่อนดัน คำสั่งระดับกลางใช้ได้ทุกตัว</span></p></div>
+
       <h3 class="group-h" id="g-setup">ตั้งค่า (เขียนไว้บนสุดของ Mission)</h3>
       <p>ไม่ทำให้หุ่นขยับ แค่ตั้งค่าให้คำสั่งข้างล่าง</p>
       <div class="tbl-wrap">
@@ -522,10 +533,56 @@ code { border-radius: 6px; }
           <tr><td><code>Speed_LR(120, 120)</code></td><td>ความเร็วของ GO, GB, R, L (ตัวแรก = ล้อขวา ตัวที่สอง = ล้อซ้าย)</td></tr>
           <tr><td><code>speed_trun = 150;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
           <tr><td><code>speed_cross = 95;</code></td><td>ความเร็วตอน cross_down</td></tr>
-          <tr><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
+          <tr class="lvl-hi"><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
           <tr><td><code>time_cross = 175;</code></td><td>ระยะเวลาของ cross_down (เลี้ยวแล้วเอียง ให้ปรับค่านี้)</td></tr>
         </tbody>
       </table>
+      </div>
+
+      <div class="lvl-hi">
+      <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
+      <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D13, Echo = D11) เช็คก่อนดัน คำสั่งกลุ่มอื่นข้างล่างใช้ได้ทั้งสองระดับ</p>
+      <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
+
+      <article class="cmd" id="c-FLJ">
+        <header><h3>FLJ() <span class="alt">/ FLJ(ms)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นแยกข้างไหนก็ได้</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นไปจนเจอแยก ไม่ต้องรู้ว่าเส้นแยกอยู่ซ้ายหรือขวา</dd>
+        <dt>ใช้ตอนไหน</dt><dd>คู่กับ can_auto: <code>FLJ(); can_auto();</code></dd>
+        <dt>เกิดอะไร</dt><dd>หยุดที่แยกแรกที่เจอ ทางโค้งส่วนใหญ่ไม่นับเป็นแยก ใส่เลขได้ เช่น <code>FLJ(800)</code> = 800 ms แรกไม่สนแยก ใช้ผ่านโค้งที่ยังหลอก</dd></dl>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ขอบกล่องเริ่ม (เส้นขวางเต็ม) ใช้ <code>FL()</code> เท่านั้น ถ้าใช้ FLJ หุ่นจะคิดว่าเป็นแยกสองข้าง <span class="tag">ยังไม่ได้ลองบนหุ่นจริง</span></p></div>
+      </article>
+
+      <article class="cmd" id="c-can_auto">
+        <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
+        <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
+        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
+          <tbody>
+            <tr><td>ซ้ายอย่างเดียว</td><td>cheak_can_L</td></tr>
+            <tr><td>ขวาอย่างเดียว</td><td>cheak_can_R</td></tr>
+            <tr><td>สองข้าง</td><td>cheak_can_LR (ซ้ายก่อน แล้วขวา)</td></tr>
+            <tr><td>ไม่เห็น</td><td>ไม่ทำอะไร วิ่งต่อ</td></tr>
+          </tbody>
+        </table></div>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ช้ากว่า can_L / can_R เพราะต้องเลี้ยวเข้าไปดูทุกเส้นแยก ถ้ารู้ว่ากระป๋องอยู่ไหน (ระดับกลาง) ใช้ can_L / can_R เร็วกว่า เลขในวงเล็บ = ระยะ cm ที่นับว่ามีกระป๋อง ไม่ใส่ = ใช้ <code>can_cm</code></p></div>
+      </article>
+
+      <article class="cmd" id="c-cheak_can">
+        <header><h3>cheak_can_L() <span class="alt">/ cheak_can_R() / cheak_can_LR()</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>เหมือน can_L / can_R / can_LR แต่เช็คด้วย ultrasonic ก่อนว่ามีกระป๋องไหม</dd>
+        <dt>ใช้ตอนไหน</dt><dd>รู้ว่าเส้นแยกอยู่ข้างไหน แต่ไม่รู้ว่ามีกระป๋องไหม: <code>FLR(); cross_down(); cheak_can_R();</code></dd>
+        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
+      </article>
+
+      <article class="cmd" id="c-FL_U">
+        <header><h3>FL_U(cm)<span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอของข้างหน้า แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นจนเจอของข้างหน้าใกล้กว่าเลขที่ใส่ (cm)</dd>
+        <dt>ใช้ตอนไหน</dt><dd>แทบไม่ต้องใช้ ใช้วิ่งเข้าหากระป๋องให้หยุดก่อนชน</dd>
+        <dt>เกิดอะไร</dt><dd>หยุดแล้วเบรก ถ้าข้างหน้าไม่มีอะไร หุ่นวิ่งไปเรื่อยๆ จนหลุดเส้นได้</dd></dl>
+      </article>
+
       </div>
 
       <h3 class="group-h" id="g-follow">วิ่งตามเส้น</h3>
@@ -610,49 +667,6 @@ code { border-radius: 6px; }
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>B เบรกทันที STOP เบรกแล้วรอตามเวลาที่ใส่</dd>
         <dt>ใช้ตอนไหน</dt><dd>หลัง FL / FLR / FLL ถ้าต้องการให้หุ่นหยุดนิ่งตรงนั้น</dd>
         <dt>เกิดอะไร</dt><dd>หุ่นหยุด ออกตัวครั้งต่อไปจะค่อยๆ เร่ง</dd></dl>
-      </article>
-
-      <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
-      <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D13, Echo = D11) เช็คก่อนดัน ระดับกลางไม่ต้องใช้ กลุ่มบนใช้ได้ทั้งสองระดับ</p>
-      <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
-
-      <article class="cmd" id="c-FLJ">
-        <header><h3>FLJ() <span class="alt">/ FLJ(ms)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นแยกข้างไหนก็ได้</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นไปจนเจอแยก ไม่ต้องรู้ว่าเส้นแยกอยู่ซ้ายหรือขวา</dd>
-        <dt>ใช้ตอนไหน</dt><dd>คู่กับ can_auto: <code>FLJ(); can_auto();</code></dd>
-        <dt>เกิดอะไร</dt><dd>หยุดที่แยกแรกที่เจอ ทางโค้งส่วนใหญ่ไม่นับเป็นแยก ใส่เลขได้ เช่น <code>FLJ(800)</code> = 800 ms แรกไม่สนแยก ใช้ผ่านโค้งที่ยังหลอก</dd></dl>
-        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ขอบกล่องเริ่ม (เส้นขวางเต็ม) ใช้ <code>FL()</code> เท่านั้น ถ้าใช้ FLJ หุ่นจะคิดว่าเป็นแยกสองข้าง <span class="tag">ยังไม่ได้ลองบนหุ่นจริง</span></p></div>
-      </article>
-
-      <article class="cmd" id="c-can_auto">
-        <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
-        <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
-        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
-          <tbody>
-            <tr><td>ซ้ายอย่างเดียว</td><td>cheak_can_L</td></tr>
-            <tr><td>ขวาอย่างเดียว</td><td>cheak_can_R</td></tr>
-            <tr><td>สองข้าง</td><td>cheak_can_LR (ซ้ายก่อน แล้วขวา)</td></tr>
-            <tr><td>ไม่เห็น</td><td>ไม่ทำอะไร วิ่งต่อ</td></tr>
-          </tbody>
-        </table></div>
-        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ช้ากว่า can_L / can_R เพราะต้องเลี้ยวเข้าไปดูทุกเส้นแยก ถ้ารู้ว่ากระป๋องอยู่ไหน (ระดับกลาง) ใช้ can_L / can_R เร็วกว่า เลขในวงเล็บ = ระยะ cm ที่นับว่ามีกระป๋อง ไม่ใส่ = ใช้ <code>can_cm</code></p></div>
-      </article>
-
-      <article class="cmd" id="c-cheak_can">
-        <header><h3>cheak_can_L() <span class="alt">/ cheak_can_R() / cheak_can_LR()</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>เหมือน can_L / can_R / can_LR แต่เช็คด้วย ultrasonic ก่อนว่ามีกระป๋องไหม</dd>
-        <dt>ใช้ตอนไหน</dt><dd>รู้ว่าเส้นแยกอยู่ข้างไหน แต่ไม่รู้ว่ามีกระป๋องไหม: <code>FLR(); cross_down(); cheak_can_R();</code></dd>
-        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
-      </article>
-
-      <article class="cmd" id="c-FL_U">
-        <header><h3>FL_U(cm)<span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอของข้างหน้า แล้วเบรก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นจนเจอของข้างหน้าใกล้กว่าเลขที่ใส่ (cm)</dd>
-        <dt>ใช้ตอนไหน</dt><dd>แทบไม่ต้องใช้ ใช้วิ่งเข้าหากระป๋องให้หยุดก่อนชน</dd>
-        <dt>เกิดอะไร</dt><dd>หยุดแล้วเบรก ถ้าข้างหน้าไม่มีอะไร หุ่นวิ่งไปเรื่อยๆ จนหลุดเส้นได้</dd></dl>
       </article>
 
       <h3 class="group-h" id="g-tune">หาค่าล้อให้วิ่งตรง</h3>
@@ -803,6 +817,7 @@ code { border-radius: 6px; }
 
     <section class="sec" id="cheat">
       <h2>ตารางสรุป</h2>
+      <div class="lvl-bar"><div class="seg lvl-seg" role="group" aria-label="ระดับการแข่ง"><button type="button" data-lvl="mid" aria-pressed="true">ระดับกลาง</button><button type="button" data-lvl="hi" aria-pressed="false">ระดับสูง</button></div><p><span class="lvl-mid"><b>ระดับกลาง:</b> กระป๋องอยู่ที่เดิม เขียนทีละแยก ไม่ต้องใช้ ultrasonic</span><span class="lvl-hi"><b>ระดับสูง:</b> กระป๋องสลับทุกรอบ มีแยกหลอก ใช้ ultrasonic เช็คก่อนดัน คำสั่งระดับกลางใช้ได้ทุกตัว</span></p></div>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>คำสั่ง</th><th>จบเมื่อ</th><th>เบรก?</th></tr></thead>
         <tbody>
@@ -815,10 +830,10 @@ code { border-radius: 6px; }
           <tr><td><code>push()</code></td><td>307 ms</td><td>เบรก</td></tr>
           <tr><td><code>TL()</code> / <code>TR()</code></td><td>หมุนจน C[2] เจอเส้นใหม่</td><td>เบรก</td></tr>
           <tr><td><code>B()</code> / <code>STOP(x)</code></td><td>50 ms / x + 50 ms</td><td>เบรก</td></tr>
-          <tr><td><code>FLJ()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เจอเส้นแยกข้างไหนก็ได้ (C[2] ต้องดำด้วย)</td><td>ไม่</td></tr>
-          <tr><td><code>can_auto()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ดูเส้นแยกเอง เช็คกระป๋องทุกเส้น กลับมาทิศเดิม</td><td>เบรก</td></tr>
-          <tr><td><code>cheak_can_L()</code> <code>cheak_can_R()</code> <code>cheak_can_LR()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เช็คกระป๋องก่อน กลับมาทิศเดิม</td><td>เบรก</td></tr>
-          <tr><td><code>FL_U(cm)</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ultrasonic เจอของใกล้กว่า cm</td><td>เบรก</td></tr>
+          <tr class="lvl-hi"><td><code>FLJ()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เจอเส้นแยกข้างไหนก็ได้ (C[2] ต้องดำด้วย)</td><td>ไม่</td></tr>
+          <tr class="lvl-hi"><td><code>can_auto()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ดูเส้นแยกเอง เช็คกระป๋องทุกเส้น กลับมาทิศเดิม</td><td>เบรก</td></tr>
+          <tr class="lvl-hi"><td><code>cheak_can_L()</code> <code>cheak_can_R()</code> <code>cheak_can_LR()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เช็คกระป๋องก่อน กลับมาทิศเดิม</td><td>เบรก</td></tr>
+          <tr class="lvl-hi"><td><code>FL_U(cm)</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ultrasonic เจอของใกล้กว่า cm</td><td>เบรก</td></tr>
           <tr><td><code>GO</code> <code>GB</code> <code>R</code> <code>L</code> <code>M_A</code> <code>M_D</code>(ms)</td><td>ครบเวลา ไม่ดูเส้น</td><td>เบรก</td></tr>
           <tr><td><code>BL()</code> <code>BLR()</code> <code>BLL()</code> <code>BL_time()</code> <code>bcross_down()</code> <code>GBL()</code> <code>M_AB()</code> <code>M_DB()</code></td><td>ถอยหลัง <span class="tag o">ไม่แนะนำ</span></td><td>-</td></tr>
         </tbody>
@@ -830,6 +845,7 @@ FLR(); cross_down(); can_R();            <span class="c">// เส้นแย�
 FLL(); cross_down(); can_L();            <span class="c">// เส้นแยกซ้าย มีกระป๋อง</span>
 FLR(); cross();                          <span class="c">// เส้นแยกว่าง ใช้เป็นจุดอ้างอิง</span>
 FL_time(1500); FLR(); ...                <span class="c">// มีโค้งหลอกก่อนถึงเส้นแยก</span></pre>
+        <div class="lvl-hi">
         <p><b>ระดับสูง</b> <span class="tag new">ใหม่</span> (กระป๋องสลับทุกรอบ มีแยกหลอก)</p>
 <pre>FL_C();                                  <span class="c">// ออกจากกล่อง</span>
 FLJ(); can_auto();                       <span class="c">// ทุกแยก เขียนเหมือนกัน</span>
@@ -837,6 +853,7 @@ FLJ(800); can_auto();                    <span class="c">// มีโค้ง�
 FLJ(); can_auto(50);                     <span class="c">// เส้นแยกยาว ใช้ระยะ 50 cm</span>
 FLR(); cross_down(); cheak_can_R();      <span class="c">// รู้ข้าง แต่ไม่รู้ว่ามีกระป๋อง</span>
 FL(); cross();                           <span class="c">// เข้ากล่อง</span></pre>
+        </div>
       </div>
     </section>
   </main>
@@ -1993,6 +2010,24 @@ if (typeof module !== 'undefined') module.exports = SIM;
   }
 })();
 
+</script>
+<script>
+// สลับระดับกลาง / ระดับสูง (จำค่าไว้ในเครื่อง)
+(() => {
+  const root = document.documentElement, KEY = 'trt-level', btns = document.querySelectorAll('.lvl-seg button');
+  const set = hi => {
+    root.classList.toggle('lvl-hi-on', hi);
+    btns.forEach(b => b.setAttribute('aria-pressed', String((b.dataset.lvl === 'hi') === hi)));
+    try { localStorage.setItem(KEY, hi ? 'hi' : 'mid'); } catch (e) {}
+  };
+  btns.forEach(b => b.addEventListener('click', () => set(b.dataset.lvl === 'hi')));
+  let hi = false;
+  try { hi = localStorage.getItem(KEY) === 'hi'; } catch (e) {}
+  const t = location.hash && document.getElementById(location.hash.slice(1));
+  if (t && t.closest('.lvl-hi')) hi = true;
+  set(hi);
+  if (t && hi) t.scrollIntoView();
+})();
 </script>
 </body>
 </html>
