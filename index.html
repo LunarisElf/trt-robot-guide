@@ -260,6 +260,8 @@ pre .c { color: #9aa3ad; } pre .k { color: #f0c34a; } pre .n { color: #f19a6a; }
 .tips .src { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
 .tag { display: inline-block; font: 600 12px/1 var(--disp); letter-spacing: .04em; padding: 4px 8px; border-radius: 3px; background: var(--vinyl-2); color: var(--ink-2); vertical-align: middle; margin-left: 6px; }
 .tag.o { background: var(--can-o-2); color: var(--can-o-ink); }
+.tag.new { background: #dcfce7; color: #15803d; }
+.tag.hi { background: #e0e7ff; color: #3730a3; }
 
 footer.foot { max-width: 1240px; margin: 0 auto; padding: 30px 24px 60px; color: var(--ink-3); font-size: 14px; border-top: 1px solid var(--rule); }
 
@@ -414,14 +416,15 @@ code { border-radius: 6px; }
       <a href="#pid">วิ่งตามเส้นยังไง</a>
       <a href="#cmds">คำสั่งทั้งหมด</a>
       <a class="sub" href="#g-setup">ตั้งค่า</a>
-      <a class="sub" href="#g-follow">วิ่งตามเส้นจนเจอแยก</a>
-      <a class="sub" href="#g-time">วิ่งตามเวลา / ข้ามแยก</a>
-      <a class="sub" href="#g-turn">เลี้ยว</a>
+      <a class="sub" href="#g-follow">วิ่งตามเส้น</a>
+      <a class="sub" href="#g-cross">ข้ามแยก</a>
       <a class="sub" href="#g-can">ดันกระป๋อง</a>
-      <a class="sub" href="#g-blind">เคลื่อนที่ไม่ดูเส้น</a>
-      <a class="sub" href="#g-tune">หาค่าล้อให้วิ่งตรง</a>
-      <a class="sub" href="#g-back">ถอยหลัง (ไม่แนะนำ)</a>
+      <a class="sub" href="#g-turn">เลี้ยว</a>
       <a class="sub" href="#g-stop">หยุด</a>
+      <a class="sub" href="#g-high">ระดับสูง (ultrasonic) <span class="tag new">ใหม่</span></a>
+      <a class="sub" href="#g-tune">หาค่าล้อให้วิ่งตรง</a>
+      <a class="sub" href="#g-blind">เคลื่อนที่ไม่ดูเส้น</a>
+      <a class="sub" href="#g-back">ถอยหลัง (ไม่แนะนำ)</a>
       <a href="#play">สนามทดลอง</a>
       <a href="#tips">เคล็ดลับและกับดัก</a>
       <a href="#cheat">ตารางสรุป</a>
@@ -519,12 +522,13 @@ code { border-radius: 6px; }
           <tr><td><code>Speed_LR(120, 120)</code></td><td>ความเร็วของ GO, GB, R, L (ตัวแรก = ล้อขวา ตัวที่สอง = ล้อซ้าย)</td></tr>
           <tr><td><code>speed_trun = 150;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
           <tr><td><code>speed_cross = 95;</code></td><td>ความเร็วตอน cross_down</td></tr>
+          <tr><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
           <tr><td><code>time_cross = 175;</code></td><td>ระยะเวลาของ cross_down (เลี้ยวแล้วเอียง ให้ปรับค่านี้)</td></tr>
         </tbody>
       </table>
       </div>
 
-      <h3 class="group-h" id="g-follow">วิ่งตามเส้นจนเจอแยก</h3>
+      <h3 class="group-h" id="g-follow">วิ่งตามเส้น</h3>
 
       <article class="cmd" id="c-FL">
         <header><h3>FL()</h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นขวาง</span></header>
@@ -544,15 +548,22 @@ code { border-radius: 6px; }
         <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ถ้ามีโค้งก่อนถึงเส้นแยก หุ่นอาจหยุดที่โค้งแทน ใส่ <code>FL_time(...)</code> ให้วิ่งผ่านโค้งก่อน</p></div>
       </article>
 
-
-      <h3 class="group-h" id="g-time">วิ่งตามเวลา / ข้ามแยก</h3>
-
       <article class="cmd" id="c-FL_time">
         <header><h3>FL_time(ms)</h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นตามเวลาที่ใส่ (1000 = 1 วินาที)</dd>
         <dt>ใช้ตอนไหน</dt><dd>ผ่านโค้งหรือเส้นแยกที่ไม่ต้องการ</dd>
         <dt>เกิดอะไร</dt><dd>วิ่งไปเรื่อยๆ ไม่สนแยก หมดเวลาก็จบ แบตอ่อนจะไปได้สั้นลง</dd></dl>
         <div class="sim" data-demo="FL_time"></div>
+      </article>
+
+      <h3 class="group-h" id="g-cross">ข้ามแยก</h3>
+
+      <article class="cmd" id="c-cross_down">
+        <header><h3>cross_down()</h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ขยับไปข้างหน้าช้าๆ อีกนิดแล้วหยุด ให้ล้ออยู่ตรงแยกพอดี</dd>
+        <dt>ใช้ตอนไหน</dt><dd>ก่อนเลี้ยวทุกครั้ง: <code>FL(); cross_down(); TL();</code></dd>
+        <dt>เกิดอะไร</dt><dd>หุ่นหยุดตรงแยก พร้อมเลี้ยว ถ้าเลี้ยวแล้วหุ่นเอียง ให้ปรับ time_cross</dd></dl>
+        <div class="sim" data-demo="cross_down"></div>
       </article>
 
       <article class="cmd" id="c-cross">
@@ -563,12 +574,23 @@ code { border-radius: 6px; }
         <div class="sim" data-demo="cross"></div>
       </article>
 
-      <article class="cmd" id="c-cross_down">
-        <header><h3>cross_down()</h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ขยับไปข้างหน้าช้าๆ อีกนิดแล้วหยุด ให้ล้ออยู่ตรงแยกพอดี</dd>
-        <dt>ใช้ตอนไหน</dt><dd>ก่อนเลี้ยวทุกครั้ง: <code>FL(); cross_down(); TL();</code></dd>
-        <dt>เกิดอะไร</dt><dd>หุ่นหยุดตรงแยก พร้อมเลี้ยว ถ้าเลี้ยวแล้วหุ่นเอียง ให้ปรับ time_cross</dd></dl>
-        <div class="sim" data-demo="cross_down"></div>
+      <h3 class="group-h" id="g-can">ดันกระป๋อง</h3>
+
+      <article class="cmd" id="c-can">
+        <header><h3>can_L() <span class="alt">/ can_R() / can_LR()</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ดันกระป๋องให้ครบในคำสั่งเดียว: เส้นแยกซ้าย (can_L) เส้นแยกขวา (can_R) หรือทั้งสองข้าง (can_LR)</dd>
+        <dt>ใช้ตอนไหน</dt><dd>ที่แยก หลัง cross_down: <code>FLR(); cross_down(); can_R();</code></dd>
+        <dt>เกิดอะไร</dt><dd>เลี้ยวเข้าเส้นแยก ดันกระป๋อง กลับหลังหัน วิ่งกลับมาที่แยก แล้วหันไปทางเดิม พร้อมไปแยกถัดไป</dd></dl>
+        <div class="sim" data-demo="can_LR"></div>
+      </article>
+
+      <article class="cmd" id="c-push">
+        <header><h3>push()</h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>พุ่งไปข้างหน้าตามเส้นแยก ชนกระป๋องที่ปลายเส้นแยก</dd>
+        <dt>ใช้ตอนไหน</dt><dd>หลังเลี้ยวเข้าเส้นแยกที่มีกระป๋อง</dd>
+        <dt>เกิดอะไร</dt><dd>กระป๋องขยับออกจากที่เดิม หุ่นหยุดเลยปลายเส้นแยกไปนิด</dd></dl>
+        <div class="sim" data-demo="push"></div>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>หลังใช้ push() ครั้งแรก ความเร็ววิ่งตามเส้นจะเป็น 240 ตลอด ถ้าอยากให้ช้าลง ใส่ <code>Speed_motor(...)</code> ใหม่</p></div>
       </article>
 
       <h3 class="group-h" id="g-turn">เลี้ยว</h3>
@@ -582,42 +604,55 @@ code { border-radius: 6px; }
         <div class="sim" data-demo="TR"></div>
       </article>
 
-      <h3 class="group-h" id="g-can">ดันกระป๋อง</h3>
-
-      <article class="cmd" id="c-push">
-        <header><h3>push()</h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>พุ่งไปข้างหน้าตามเส้นแยก ชนกระป๋องที่ปลายเส้นแยก</dd>
-        <dt>ใช้ตอนไหน</dt><dd>หลังเลี้ยวเข้าเส้นแยกที่มีกระป๋อง</dd>
-        <dt>เกิดอะไร</dt><dd>กระป๋องขยับออกจากที่เดิม หุ่นหยุดเลยปลายเส้นแยกไปนิด</dd></dl>
-        <div class="sim" data-demo="push"></div>
-        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>หลังใช้ push() ครั้งแรก ความเร็ววิ่งตามเส้นจะเป็น 240 ตลอด ถ้าอยากให้ช้าลง ใส่ <code>Speed_motor(...)</code> ใหม่</p></div>
+      <h3 class="group-h" id="g-stop">หยุด</h3>
+      <article class="cmd" id="c-STOP">
+        <header><h3>B() <span class="alt">/ STOP(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>ทันที</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>B เบรกทันที STOP เบรกแล้วรอตามเวลาที่ใส่</dd>
+        <dt>ใช้ตอนไหน</dt><dd>หลัง FL / FLR / FLL ถ้าต้องการให้หุ่นหยุดนิ่งตรงนั้น</dd>
+        <dt>เกิดอะไร</dt><dd>หุ่นหยุด ออกตัวครั้งต่อไปจะค่อยๆ เร่ง</dd></dl>
       </article>
 
-      <article class="cmd" id="c-can">
-        <header><h3>can_L() <span class="alt">/ can_R() / can_LR()</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ดันกระป๋องให้ครบในคำสั่งเดียว: เส้นแยกซ้าย (can_L) เส้นแยกขวา (can_R) หรือทั้งสองข้าง (can_LR)</dd>
-        <dt>ใช้ตอนไหน</dt><dd>ที่แยก หลัง cross_down: <code>FLR(); cross_down(); can_R();</code></dd>
-        <dt>เกิดอะไร</dt><dd>เลี้ยวเข้าเส้นแยก ดันกระป๋อง กลับหลังหัน วิ่งกลับมาที่แยก แล้วหันไปทางเดิม พร้อมไปแยกถัดไป</dd></dl>
-        <div class="sim" data-demo="can_LR"></div>
+      <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
+      <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D13, Echo = D11) เช็คก่อนดัน ระดับกลางไม่ต้องใช้ กลุ่มบนใช้ได้ทั้งสองระดับ</p>
+      <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
+
+      <article class="cmd" id="c-FLJ">
+        <header><h3>FLJ() <span class="alt">/ FLJ(ms)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นแยกข้างไหนก็ได้</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นไปจนเจอแยก ไม่ต้องรู้ว่าเส้นแยกอยู่ซ้ายหรือขวา</dd>
+        <dt>ใช้ตอนไหน</dt><dd>คู่กับ can_auto: <code>FLJ(); can_auto();</code></dd>
+        <dt>เกิดอะไร</dt><dd>หยุดที่แยกแรกที่เจอ ทางโค้งส่วนใหญ่ไม่นับเป็นแยก ใส่เลขได้ เช่น <code>FLJ(800)</code> = 800 ms แรกไม่สนแยก ใช้ผ่านโค้งที่ยังหลอก</dd></dl>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ขอบกล่องเริ่ม (เส้นขวางเต็ม) ใช้ <code>FL()</code> เท่านั้น ถ้าใช้ FLJ หุ่นจะคิดว่าเป็นแยกสองข้าง <span class="tag">ยังไม่ได้ลองบนหุ่นจริง</span></p></div>
       </article>
 
-      <h3 class="group-h" id="g-blind">เคลื่อนที่ไม่ดูเส้น</h3>
-      <p>สั่งล้อตามเวลา ไม่ดูเส้นเลย ระยะเปลี่ยนตามแบต ใช้ให้น้อยที่สุด</p>
-
-      <article class="cmd" id="c-GO">
-        <header><h3>GO(ms) <span class="alt">/ GB(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>GO เดินหน้าตรง GB ถอยหลังตรง</dd>
-        <dt>ใช้ตอนไหน</dt><dd>ขยับสั้นๆ ตรงที่ไม่มีเส้น เช่น ถอยนิดเดียวให้จอดในกล่อง ถ้าต้องถอย ใช้ GB() ตัวเดียว</dd>
-        <dt>เกิดอะไร</dt><dd>วิ่งตรงตามเวลา ถ้าล้อสองข้างแรงไม่เท่ากัน หุ่นจะเบ้ (ลองติ๊ก "มอเตอร์ขวาอ่อนกว่า")</dd></dl>
-        <div class="sim" data-demo="GO"></div>
+      <article class="cmd" id="c-can_auto">
+        <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
+        <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
+        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
+          <tbody>
+            <tr><td>ซ้ายอย่างเดียว</td><td>cheak_can_L</td></tr>
+            <tr><td>ขวาอย่างเดียว</td><td>cheak_can_R</td></tr>
+            <tr><td>สองข้าง</td><td>cheak_can_LR (ซ้ายก่อน แล้วขวา)</td></tr>
+            <tr><td>ไม่เห็น</td><td>ไม่ทำอะไร วิ่งต่อ</td></tr>
+          </tbody>
+        </table></div>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ช้ากว่า can_L / can_R เพราะต้องเลี้ยวเข้าไปดูทุกเส้นแยก ถ้ารู้ว่ากระป๋องอยู่ไหน (ระดับกลาง) ใช้ can_L / can_R เร็วกว่า เลขในวงเล็บ = ระยะ cm ที่นับว่ามีกระป๋อง ไม่ใส่ = ใช้ <code>can_cm</code></p></div>
       </article>
 
-      <article class="cmd" id="c-R">
-        <header><h3>R(ms) <span class="alt">/ L(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>หมุนตัวขวา (R) หรือซ้าย (L) ตามเวลา</dd>
-        <dt>ใช้ตอนไหน</dt><dd>แทบไม่ต้องใช้ ถ้าจะเลี้ยวเข้าเส้นใช้ TL / TR ดีกว่า</dd>
-        <dt>เกิดอะไร</dt><dd>หมุนไปตามเวลา มุมที่ได้เปลี่ยนตามแบต</dd></dl>
-        <div class="sim" data-demo="R"></div>
+      <article class="cmd" id="c-cheak_can">
+        <header><h3>cheak_can_L() <span class="alt">/ cheak_can_R() / cheak_can_LR()</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>เหมือน can_L / can_R / can_LR แต่เช็คด้วย ultrasonic ก่อนว่ามีกระป๋องไหม</dd>
+        <dt>ใช้ตอนไหน</dt><dd>รู้ว่าเส้นแยกอยู่ข้างไหน แต่ไม่รู้ว่ามีกระป๋องไหม: <code>FLR(); cross_down(); cheak_can_R();</code></dd>
+        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
+      </article>
+
+      <article class="cmd" id="c-FL_U">
+        <header><h3>FL_U(cm)<span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอของข้างหน้า แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งตามเส้นจนเจอของข้างหน้าใกล้กว่าเลขที่ใส่ (cm)</dd>
+        <dt>ใช้ตอนไหน</dt><dd>แทบไม่ต้องใช้ ใช้วิ่งเข้าหากระป๋องให้หยุดก่อนชน</dd>
+        <dt>เกิดอะไร</dt><dd>หยุดแล้วเบรก ถ้าข้างหน้าไม่มีอะไร หุ่นวิ่งไปเรื่อยๆ จนหลุดเส้นได้</dd></dl>
       </article>
 
       <h3 class="group-h" id="g-tune">หาค่าล้อให้วิ่งตรง</h3>
@@ -649,6 +684,25 @@ code { border-radius: 6px; }
         </table></div>
       </article>
 
+      <h3 class="group-h" id="g-blind">เคลื่อนที่ไม่ดูเส้น</h3>
+      <p>สั่งล้อตามเวลา ไม่ดูเส้นเลย ระยะเปลี่ยนตามแบต ใช้ให้น้อยที่สุด</p>
+
+      <article class="cmd" id="c-GO">
+        <header><h3>GO(ms) <span class="alt">/ GB(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>GO เดินหน้าตรง GB ถอยหลังตรง</dd>
+        <dt>ใช้ตอนไหน</dt><dd>ขยับสั้นๆ ตรงที่ไม่มีเส้น เช่น ถอยนิดเดียวให้จอดในกล่อง ถ้าต้องถอย ใช้ GB() ตัวเดียว</dd>
+        <dt>เกิดอะไร</dt><dd>วิ่งตรงตามเวลา ถ้าล้อสองข้างแรงไม่เท่ากัน หุ่นจะเบ้ (ลองติ๊ก "มอเตอร์ขวาอ่อนกว่า")</dd></dl>
+        <div class="sim" data-demo="GO"></div>
+      </article>
+
+      <article class="cmd" id="c-R">
+        <header><h3>R(ms) <span class="alt">/ L(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>หมดเวลา แล้วเบรก</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>หมุนตัวขวา (R) หรือซ้าย (L) ตามเวลา</dd>
+        <dt>ใช้ตอนไหน</dt><dd>แทบไม่ต้องใช้ ถ้าจะเลี้ยวเข้าเส้นใช้ TL / TR ดีกว่า</dd>
+        <dt>เกิดอะไร</dt><dd>หมุนไปตามเวลา มุมที่ได้เปลี่ยนตามแบต</dd></dl>
+        <div class="sim" data-demo="R"></div>
+      </article>
+
       <h3 class="group-h" id="g-back">ถอยหลัง (ไม่แนะนำ)</h3>
       <div class="can-note warn"><span class="can" aria-hidden="true"></span><p><b>ไม่แนะนำให้ใช้คำสั่งกลุ่มนี้</b> เซนเซอร์อยู่ด้านหน้า พอถอยหลังหุ่นจะส่ายและหลุดเส้นง่าย ถ้าจำเป็นต้องถอย ใช้ <code>GB()</code> สั้นๆ แทน หรือใช้ TR / TL กลับหลังหันแล้วเดินหน้าแทนการถอย</p></div>
 
@@ -671,14 +725,6 @@ code { border-radius: 6px; }
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ล็อกล้อหนึ่ง แล้วให้อีกล้อถอยหลัง หุ่นเลี้ยวแบบถอย</dd>
         <dt>ใช้ตอนไหน</dt><dd>ไม่แนะนำให้ใช้ ใช้ TL / TR แทน</dd>
         <dt>เกิดอะไร</dt><dd>หุ่นเลี้ยวถอยตามเวลา มุมเปลี่ยนตามแบต</dd></dl>
-      </article>
-
-      <h3 class="group-h" id="g-stop">หยุด</h3>
-      <article class="cmd" id="c-STOP">
-        <header><h3>B() <span class="alt">/ STOP(ms)</span></h3><span class="ends time"><b>หยุดเมื่อ</b>ทันที</span></header>
-        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>B เบรกทันที STOP เบรกแล้วรอตามเวลาที่ใส่</dd>
-        <dt>ใช้ตอนไหน</dt><dd>หลัง FL / FLR / FLL ถ้าต้องการให้หุ่นหยุดนิ่งตรงนั้น</dd>
-        <dt>เกิดอะไร</dt><dd>หุ่นหยุด ออกตัวครั้งต่อไปจะค่อยๆ เร่ง</dd></dl>
       </article>
 
       <div class="col" style="margin-top:48px">
@@ -763,28 +809,39 @@ code { border-radius: 6px; }
           <tr><td><code>FL()</code></td><td>C[0] และ C[4] ดำ (เส้นขวาง)</td><td>ไม่</td></tr>
           <tr><td><code>FLR()</code> / <code>FLL()</code></td><td>C[4] / C[0] ดำ (เส้นแยกขวา / ซ้าย)</td><td>ไม่</td></tr>
           <tr><td><code>FL_time(ms)</code></td><td>ครบเวลา</td><td>ไม่</td></tr>
-          <tr><td><code>cross()</code></td><td>200 ms</td><td>ไม่</td></tr>
           <tr><td><code>cross_down()</code></td><td>time_cross ms ที่ speed_cross</td><td>เบรก</td></tr>
-          <tr><td><code>TL()</code> / <code>TR()</code></td><td>หมุนจน C[2] เจอเส้นใหม่</td><td>เบรก</td></tr>
-          <tr><td><code>push()</code></td><td>300 ms ที่ 240 (ตั้ง SPEED = 240 ถาวร)</td><td>เบรก</td></tr>
+          <tr><td><code>cross()</code></td><td>200 ms</td><td>ไม่</td></tr>
           <tr><td><code>can_L()</code> <code>can_R()</code> <code>can_LR()</code></td><td>กลับมาบนเส้นหลัก ทิศเดิม</td><td>เบรก</td></tr>
+          <tr><td><code>push()</code></td><td>307 ms</td><td>เบรก</td></tr>
+          <tr><td><code>TL()</code> / <code>TR()</code></td><td>หมุนจน C[2] เจอเส้นใหม่</td><td>เบรก</td></tr>
+          <tr><td><code>B()</code> / <code>STOP(x)</code></td><td>50 ms / x + 50 ms</td><td>เบรก</td></tr>
+          <tr><td><code>FLJ()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เจอเส้นแยกข้างไหนก็ได้ (C[2] ต้องดำด้วย)</td><td>ไม่</td></tr>
+          <tr><td><code>can_auto()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ดูเส้นแยกเอง เช็คกระป๋องทุกเส้น กลับมาทิศเดิม</td><td>เบรก</td></tr>
+          <tr><td><code>cheak_can_L()</code> <code>cheak_can_R()</code> <code>cheak_can_LR()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เช็คกระป๋องก่อน กลับมาทิศเดิม</td><td>เบรก</td></tr>
+          <tr><td><code>FL_U(cm)</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ultrasonic เจอของใกล้กว่า cm</td><td>เบรก</td></tr>
           <tr><td><code>GO</code> <code>GB</code> <code>R</code> <code>L</code> <code>M_A</code> <code>M_D</code>(ms)</td><td>ครบเวลา ไม่ดูเส้น</td><td>เบรก</td></tr>
           <tr><td><code>BL()</code> <code>BLR()</code> <code>BLL()</code> <code>BL_time()</code> <code>bcross_down()</code> <code>GBL()</code> <code>M_AB()</code> <code>M_DB()</code></td><td>ถอยหลัง <span class="tag o">ไม่แนะนำ</span></td><td>-</td></tr>
-          <tr><td><code>B()</code> / <code>STOP(x)</code></td><td>50 ms / x + 50 ms</td><td>เบรก</td></tr>
         </tbody>
       </table></div>
       <div class="col" style="margin-top:24px">
-        <p><b>แถวมาตรฐานต่อหนึ่งแยก</b></p>
+        <p><b>แถวมาตรฐานต่อหนึ่งแยก: ระดับกลาง</b> (กระป๋องอยู่ที่เดิม)</p>
 <pre>FL();  cross_down(); can_L(); can_R();   <span class="c">// แยกสี่ กระป๋องสองข้าง (หรือ can_LR)</span>
 FLR(); cross_down(); can_R();            <span class="c">// เส้นแยกขวา มีกระป๋อง</span>
 FLL(); cross_down(); can_L();            <span class="c">// เส้นแยกซ้าย มีกระป๋อง</span>
 FLR(); cross();                          <span class="c">// เส้นแยกว่าง ใช้เป็นจุดอ้างอิง</span>
 FL_time(1500); FLR(); ...                <span class="c">// มีโค้งหลอกก่อนถึงเส้นแยก</span></pre>
+        <p><b>ระดับสูง</b> <span class="tag new">ใหม่</span> (กระป๋องสลับทุกรอบ มีแยกหลอก)</p>
+<pre>FL_C();                                  <span class="c">// ออกจากกล่อง</span>
+FLJ(); can_auto();                       <span class="c">// ทุกแยก เขียนเหมือนกัน</span>
+FLJ(800); can_auto();                    <span class="c">// มีโค้งหลอกก่อนถึงแยก</span>
+FLJ(); can_auto(50);                     <span class="c">// เส้นแยกยาว ใช้ระยะ 50 cm</span>
+FLR(); cross_down(); cheak_can_R();      <span class="c">// รู้ข้าง แต่ไม่รู้ว่ามีกระป๋อง</span>
+FL(); cross();                           <span class="c">// เข้ากล่อง</span></pre>
       </div>
     </section>
   </main>
 </div>
-<footer class="foot">ดาวน์โหลดโค้ดหุ่นล่าสุด: <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">หน้า Release</a> (ไฟล์ zip แตกแล้วเปิดใน Arduino IDE ได้เลย)<br>คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 17 พ.ย. 2569 ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
+<footer class="foot">ดาวน์โหลดโค้ดหุ่นล่าสุด: <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">หน้า Release</a> (ไฟล์ zip แตกแล้วเปิดใน Arduino IDE ได้เลย)<br>คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 23 พ.ย. 2569 ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
 
 <script>
 // ===== TRT sim engine: แปลงโค้ด Arduino จริงเป็น JS generator ทีละบรรทัด =====
