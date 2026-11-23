@@ -538,6 +538,7 @@ code { border-radius: 6px; }
           <tr><td><code>speed_trun = 150;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
           <tr><td><code>speed_cross = 95;</code></td><td>ความเร็วตอน cross_down</td></tr>
           <tr class="lvl-hi"><td><code>debug_beep = false;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใส่ <code>true</code> ตอนทดสอบ: หลังข้ามแยก can_auto จะบี๊บสั้นบอกว่าเห็นแยกแบบไหน (ตารางด้านล่าง) ตอนแข่งใส่ <code>false</code></td></tr>
+          <tr class="lvl-hi"><td><code>end_pat = "32112";</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใช้กับ auto_run: ลำดับแยกสุดท้ายก่อนเข้ากล่อง เขียนตามลำดับที่หุ่นวิ่งผ่าน 1 = ซ้าย 2 = ขวา 3 = สองข้าง</td></tr>
           <tr class="lvl-hi"><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
           <tr><td><code>time_cross = 175;</code></td><td>ระยะเวลาของ cross_down (เลี้ยวแล้วเอียง ให้ปรับค่านี้)</td></tr>
         </tbody>
@@ -546,7 +547,7 @@ code { border-radius: 6px; }
 
       <div class="lvl-hi">
       <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
-      <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D13, Echo = D11) เช็คก่อนดัน คำสั่งกลุ่มอื่นข้างล่างใช้ได้ทั้งสองระดับ</p>
+      <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D11, Echo = D13) เช็คก่อนดัน คำสั่งกลุ่มอื่นข้างล่างใช้ได้ทั้งสองระดับ</p>
       <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
       <p>ตอนหุ่นวิ่งไม่มีสาย Serial ให้ฟังเสียงแทน (นับจำนวนครั้ง ไม่ต้องแยกเสียงสูงต่ำ):</p>
       <div class="tbl-wrap"><table class="tbl">
@@ -572,7 +573,7 @@ code { border-radius: 6px; }
         <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
         <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
-        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก อ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง (กันเสียงสะท้อนเพี้ยนครั้งเดียว) มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
+        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก อ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง (กันเสียงสะท้อนเพี้ยนครั้งเดียว) ไม่เจอตรงกลาง หุ่นส่ายซ้ายแล้วขวาเล็กน้อย หยุดยิงซ้ำทีละข้าง แล้วกลับมากลางเส้น มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
           <tbody>
@@ -583,6 +584,22 @@ code { border-radius: 6px; }
           </tbody>
         </table></div>
         <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>ช้ากว่า can_L / can_R เพราะต้องเลี้ยวเข้าไปดูทุกเส้นแยก ถ้ารู้ว่ากระป๋องอยู่ไหน (ระดับกลาง) ใช้ can_L / can_R เร็วกว่า เลขในวงเล็บ = ระยะ cm ที่นับว่ามีกระป๋อง ไม่ใส่ = ใช้ <code>can_cm</code></p></div>
+      </article>
+
+      <article class="cmd" id="c-auto_run">
+        <header><h3>auto_run()<span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอลำดับแยก end_pat แล้วเข้ากล่อง</span></header>
+        <dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งเองทั้งสนาม ไม่ต้องเขียนทีละแยก: ออกกล่อง แล้วทำ <code>FLJ(); can_auto();</code> ซ้ำไปเรื่อยๆ</dd>
+        <dt>ใช้ตอนไหน</dt><dd>เขียนบรรทัดเดียวใน Mission: <code>auto_run();</code> (ไม่ต้องมี FL_C() ข้างหน้า auto_run ออกกล่องเอง)</dd>
+        <dt>เกิดอะไร</dt><dd>หุ่นจำแยกล่าสุดไว้ พอแยกที่ผ่านมาตรงกับ <code>end_pat</code> ครบทุกตัว จะทำ <code>FL(); cross();</code> เข้ากล่องแล้วจบ หุ่นหลุดแล้ววางกลับก็ยังจอดถูก เพราะดูแค่แยกท้ายๆ</dd></dl>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>end_pat</th><th>ความหมาย</th></tr></thead>
+          <tbody>
+            <tr><td><code>"32112"</code></td><td>สองข้าง ขวา ซ้าย ซ้าย ขวา แล้วเข้ากล่อง</td></tr>
+            <tr><td>ยาวขึ้น (6-7 ตัว)</td><td>ไม่จบก่อนเวลา แต่ต้องจับแยกได้ครบมากขึ้น</td></tr>
+            <tr><td>สั้นลง (3 ตัว)</td><td>จอดได้แม้พลาดแยกก่อนหน้า แต่ลำดับเดียวกันอาจโผล่กลางสนาม แล้วจบก่อน</td></tr>
+          </tbody>
+        </table></div>
+        <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>วันแข่งดูสนามแล้วแก้ <code>end_pat</code> ให้ตรงกับแยกท้ายสนาม ซ้อมโดยเปิด <code>debug_beep = true;</code> แล้วฟังว่าเสียงช่วงท้ายตรงทุกรอบไหม พลาดแยกใน end_pat แยกเดียว หุ่นจะไม่จอด ห้ามเว้นว่าง <code>""</code> (จอดทันทีหลังออกกล่อง) ในตัวจำลองหุ่นยังอ่านแยกพลาดบ่อย auto_run เลยมักไม่จอด <span class="tag">ยังไม่ได้ลองบนหุ่นจริง</span></p></div>
       </article>
 
       <article class="cmd" id="c-cheak_can">
@@ -848,6 +865,7 @@ code { border-radius: 6px; }
           <tr><td><code>B()</code> / <code>STOP(x)</code></td><td>50 ms / x + 50 ms</td><td>เบรก</td></tr>
           <tr class="lvl-hi"><td><code>FLJ()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เจอเส้นแยกข้างไหนก็ได้ (C[2] ต้องดำด้วย)</td><td>ไม่</td></tr>
           <tr class="lvl-hi"><td><code>can_auto()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ดูเส้นแยกเอง เช็คกระป๋องทุกเส้น กลับมาทิศเดิม</td><td>เบรก</td></tr>
+          <tr class="lvl-hi"><td><code>auto_run()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เจอลำดับ end_pat แล้วเข้ากล่อง</td><td>เบรก</td></tr>
           <tr class="lvl-hi"><td><code>cheak_can_L()</code> <code>cheak_can_R()</code> <code>cheak_can_LR()</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>เช็คกระป๋องก่อน กลับมาทิศเดิม</td><td>เบรก</td></tr>
           <tr class="lvl-hi"><td><code>FL_U(cm)</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ultrasonic เจอของใกล้กว่า cm</td><td>เบรก</td></tr>
           <tr><td><code>GO</code> <code>GB</code> <code>R</code> <code>L</code> <code>M_A</code> <code>M_D</code>(ms)</td><td>ครบเวลา ไม่ดูเส้น</td><td>เบรก</td></tr>
@@ -869,6 +887,9 @@ FLJ(800); can_auto();                    <span class="c">// มีโค้ง�
 FLJ(); can_auto(50);                     <span class="c">// เส้นแยกยาว ใช้ระยะ 50 cm</span>
 FLR(); cross_down(); cheak_can_R();      <span class="c">// รู้ข้าง แต่ไม่รู้ว่ามีกระป๋อง</span>
 FL(); cross();                           <span class="c">// เข้ากล่อง</span></pre>
+        <p>หรือให้หุ่นวิ่งเองทั้งสนาม:</p>
+<pre>end_pat = "32112";                       <span class="c">// แยกท้ายสนาม ก่อนเข้ากล่อง</span>
+auto_run();                              <span class="c">// ออกกล่อง เช็คทุกแยก จอดเอง</span></pre>
         </div>
       </div>
     </section>
@@ -948,7 +969,7 @@ const SIM = (() => {
       Kp: 20, Ki: 0, Kd: 1, P: 0, I: 0, D: 0, PID_value: 0, previous_error: 0, previous_I: 0, error: 0,
       initial_motor_speed: 200, speed_L: 120, speed_R: 120, SPEED: 0, stopped: true, t_go: 0, RAMP_MS: 250,
       speed_cross: 100, speed_trun: 150, trim_L: opts.trim_L ?? 0, trim_R: opts.trim_R ?? 0, time_cross: 300,
-      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0, can_cm: 30, cm: 999, debug_beep: 0,
+      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0, can_cm: 30, cm: 999, debug_beep: 0, end_pat: '32112',
     };
     let seen_L = false, seen_R = false;   // cross_down รอบล่าสุดเห็นแขนซ้าย/ขวา
     const sensorPos = i => {
@@ -1177,10 +1198,23 @@ const SIM = (() => {
       },
       *can_auto(x = 0) {
         yield* fw.cross_down();
-        if (st.debug_beep) yield* fw._beep_n((seen_L ? 1 : 0) + (seen_R ? 2 : 0));
-        if (seen_L && seen_R) yield* fw.cheak_can_LR(x);
-        else if (seen_L) yield* fw.cheak_can_L(x);
-        else if (seen_R) yield* fw.cheak_can_R(x);
+        const j = (seen_L ? 1 : 0) + (seen_R ? 2 : 0);
+        if (st.debug_beep) yield* fw._beep_n(j);
+        if (j === 3) yield* fw.cheak_can_LR(x);
+        else if (j === 1) yield* fw.cheak_can_L(x);
+        else if (j === 2) yield* fw.cheak_can_R(x);
+        return j;
+      },
+      *auto_run() {
+        const pat = String(st.end_pat).slice(-15);
+        let last = '';
+        yield* fw.FL_C();
+        while (last !== pat) {
+          yield* fw.FLJ();
+          const j = yield* fw.can_auto();
+          if (j) last = (last + j).slice(-pat.length);
+        }
+        yield* fw.FL(); yield* fw.cross();
       },
       *slow() { yield* fw.Speed_motor(120); st.Kp = 20; },
       *normal() { st.Kp = 20; yield* fw.Speed_motor(240); },
@@ -1212,7 +1246,9 @@ const SIM = (() => {
         stmt = stmt.replace(/^[{}\s]+|[{}\s]+$/g, '');
         if (!stmt) continue;
         if (stmt === 'return') { out.push({ name: 'return', args: [], line: i }); continue; }
-        let m = stmt.match(/^([A-Za-z_]\w*)\s*=\s*(-?\d+|true|false)$/);
+        let m = stmt.match(/^(end_pat)\s*=\s*"([123]*)"$/);
+        if (m) { out.push({ name: '=', v: m[1], args: [m[2]], line: i }); continue; }
+        m = stmt.match(/^([A-Za-z_]\w*)\s*=\s*(-?\d+|true|false)$/);
         if (m) { if (VARS.includes(m[1])) out.push({ name: '=', v: m[1], args: [m[2] === 'true' ? 1 : m[2] === 'false' ? 0 : +m[2]], line: i }); else errors.push({ line: i, msg: `ไม่รู้จักตัวแปร ${m[1]}` }); continue; }
         m = stmt.match(/^([A-Za-z_]\w*)\s*\(([^)]*)\)$/);
         if (!m) { errors.push({ line: i, msg: `อ่านไม่ออก: ${stmt}` }); continue; }
@@ -1256,7 +1292,7 @@ const SIM = (() => {
           continue;
         }
         n += run.r.t - before;
-        if (run.r.t - cmdStart > LIMIT && idx < cmds.length) status = 'timeout';
+        if (run.r.t - cmdStart > (cmds[idx] && cmds[idx].name === 'auto_run' ? 600000 : LIMIT) && idx < cmds.length) status = 'timeout';
         const b = fieldDef.bounds;
         if (run.r.x < b[0] - 15 || run.r.y < b[1] - 15 || run.r.x > b[2] + 15 || run.r.y > b[3] + 15) status = 'offfield';
       }
