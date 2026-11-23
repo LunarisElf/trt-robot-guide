@@ -537,6 +537,7 @@ code { border-radius: 6px; }
           <tr><td><code>Speed_LR(120, 120)</code></td><td>ความเร็วของ GO, GB, R, L (ตัวแรก = ล้อขวา ตัวที่สอง = ล้อซ้าย)</td></tr>
           <tr><td><code>speed_trun = 150;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
           <tr><td><code>speed_cross = 95;</code></td><td>ความเร็วตอน cross_down</td></tr>
+          <tr class="lvl-hi"><td><code>debug_beep = false;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใส่ <code>true</code> ตอนทดสอบ: หลังข้ามแยก can_auto จะบี๊บสั้นบอกว่าเห็นแยกแบบไหน (ตารางด้านล่าง) ตอนแข่งใส่ <code>false</code></td></tr>
           <tr class="lvl-hi"><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
           <tr><td><code>time_cross = 175;</code></td><td>ระยะเวลาของ cross_down (เลี้ยวแล้วเอียง ให้ปรับค่านี้)</td></tr>
         </tbody>
@@ -547,6 +548,17 @@ code { border-radius: 6px; }
       <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
       <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D13, Echo = D11) เช็คก่อนดัน คำสั่งกลุ่มอื่นข้างล่างใช้ได้ทั้งสองระดับ</p>
       <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
+      <p>ตอนหุ่นวิ่งไม่มีสาย Serial ให้ฟังเสียงแทน (นับจำนวนครั้ง ไม่ต้องแยกเสียงสูงต่ำ):</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>เสียง</th><th>ความหมาย</th></tr></thead>
+        <tbody>
+          <tr><td>บี๊บสั้น 1 ครั้งหลังข้ามแยก <span class="tag">ต้อง <code>debug_beep = true;</code></span></td><td>เห็นเส้นแยกซ้าย</td></tr>
+          <tr><td>บี๊บสั้น 2 ครั้ง</td><td>เห็นเส้นแยกขวา</td></tr>
+          <tr><td>บี๊บสั้น 3 ครั้ง</td><td>เห็นสองข้าง (แยกคู่)</td></tr>
+          <tr><td>ไม่มีเสียงหลังข้ามแยก</td><td>ไม่เห็นเส้นแยกเลย หุ่นจะวิ่งต่อ (น่าจะเป็นโค้งหลอก หรือพลาดแยก)</td></tr>
+          <tr><td>บี๊บ<b>ยาว</b> 1 ครั้งหลังเลี้ยวเข้าเส้นแยก</td><td>ไม่เจอกระป๋อง (ทำงานเสมอ ไม่ต้องเปิด debug_beep)</td></tr>
+        </tbody>
+      </table></div>
 
       <article class="cmd" id="c-FLJ">
         <header><h3>FLJ() <span class="alt">/ FLJ(ms)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นแยกข้างไหนก็ได้</span></header>
@@ -560,7 +572,7 @@ code { border-radius: 6px; }
         <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
         <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
-        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
+        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก อ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง (กันเสียงสะท้อนเพี้ยนครั้งเดียว) มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
           <tbody>
@@ -577,7 +589,7 @@ code { border-radius: 6px; }
         <header><h3>cheak_can_L() <span class="alt">/ cheak_can_R() / cheak_can_LR()</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>เหมือน can_L / can_R / can_LR แต่เช็คด้วย ultrasonic ก่อนว่ามีกระป๋องไหม</dd>
         <dt>ใช้ตอนไหน</dt><dd>รู้ว่าเส้นแยกอยู่ข้างไหน แต่ไม่รู้ว่ามีกระป๋องไหม: <code>FLR(); cross_down(); cheak_can_R();</code></dd>
-        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = บี๊บ 1 ครั้งแล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
+        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
       </article>
 
       <article class="cmd" id="c-FL_U">
@@ -763,7 +775,7 @@ code { border-radius: 6px; }
     <section class="sec" id="play">
       <h2>สนามทดลอง</h2>
       <div class="col">
-        <p class="lede">เขียน Mission เองแล้วกดรัน ใช้คำสั่งได้ทุกตัวในหน้านี้ รวมถึง <code>speed_trun = 150;</code> <code>can_cm = 30;</code> แบบกำหนดค่า และ <code>return;</code> เพื่อหยุดทดสอบครึ่งทาง</p>
+        <p class="lede">เขียน Mission เองแล้วกดรัน ใช้คำสั่งได้ทุกตัวในหน้านี้ รวมถึง <code>speed_trun = 150;</code> <code>can_cm = 30;</code> <code>debug_beep = true;</code> แบบกำหนดค่า และ <code>return;</code> เพื่อหยุดทดสอบครึ่งทาง</p>
         <p><b>สนามฝึก</b> เส้นแยกอยู่บนทางตรงหมด ภารกิจตัวอย่างดันครบ 6 ใบ <b>สนามแข่ง (แก้ได้)</b> วาดตามรูปสนามจริง วางเส้นแยกเดี่ยวหรือเส้นแยกคู่เองได้ แล้วกด <b>สร้าง Mission ให้</b> เพื่อได้โค้ดตั้งต้น ถ้าระหว่างทางมีโค้งที่อาจหลอก FLR / FLL (โค้งขวาหลอก FLR โค้งซ้ายหลอก FLL) โค้ดจะใส่ <code>FL_time(...)</code> ดักไว้ข้างหน้าให้เอง เวลาที่ใส่คิดจากหุ่นจำลอง ใช้กับหุ่นจริงต้องจูนใหม่</p>
               <p class="lvl-hi"><b>สนามระดับสูง</b> <span class="tag new">ใหม่</span> ตำแหน่งเส้นแยกเหมือนสนามแข่ง (แก้ได้) แต่กระป๋องสุ่มที่ใหม่ทุกครั้งที่กดรันรอบใหม่ เส้นแยกที่ไม่มีกระป๋องคือแยกหลอก Mission ตั้งต้นใช้ <code>FLJ(); can_auto();</code> ทุกแยก ตอนหุ่นวัด ultrasonic จะเห็นกรวยหน้าหุ่นกับระยะที่วัดได้</p>
       </div>
@@ -936,7 +948,7 @@ const SIM = (() => {
       Kp: 20, Ki: 0, Kd: 1, P: 0, I: 0, D: 0, PID_value: 0, previous_error: 0, previous_I: 0, error: 0,
       initial_motor_speed: 200, speed_L: 120, speed_R: 120, SPEED: 0, stopped: true, t_go: 0, RAMP_MS: 250,
       speed_cross: 100, speed_trun: 150, trim_L: opts.trim_L ?? 0, trim_R: opts.trim_R ?? 0, time_cross: 300,
-      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0, can_cm: 30, cm: 999,
+      S: [500, 500, 500, 500, 500], C: [0, 0, 0, 0, 0], start_time: 0, can_cm: 30, cm: 999, debug_beep: 0,
     };
     let seen_L = false, seen_R = false;   // cross_down รอบล่าสุดเห็นแขนซ้าย/ขวา
     const sensorPos = i => {
@@ -1152,8 +1164,9 @@ const SIM = (() => {
         if (!x) x = st.can_cm;
         yield* fw.Read_ultarsonic();
         if (st.cm < x) return true;
-        r.beepAt = r.t; return false;   // ไม่เจอ: บี๊บ 1 ครั้ง
+        r.beepAt = r.t; r.beepLabel = 'บี๊บยาว'; return false;   // ไม่เจอ: บี๊บยาว 1 ครั้ง
       },
+      *_beep_n(n) { if (n > 0) { r.beepAt = r.t; r.beepLabel = 'บี๊บ ×' + n; } yield* delay(n * 200); },
       *_seq(v) { for (const n of v.split(' ')) yield* fw[n](); },
       *cheak_can_L(x = 0) { yield* fw.TL(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TL'); else yield* fw.TR(); },
       *cheak_can_R(x = 0) { yield* fw.TR(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TR'); else yield* fw.TL(); },
@@ -1164,6 +1177,7 @@ const SIM = (() => {
       },
       *can_auto(x = 0) {
         yield* fw.cross_down();
+        if (st.debug_beep) yield* fw._beep_n((seen_L ? 1 : 0) + (seen_R ? 2 : 0));
         if (seen_L && seen_R) yield* fw.cheak_can_LR(x);
         else if (seen_L) yield* fw.cheak_can_L(x);
         else if (seen_R) yield* fw.cheak_can_R(x);
@@ -1179,7 +1193,7 @@ const SIM = (() => {
       can_LR: 'TL push TR FL cross_down push TR FL cross_down TR',
     };
     for (const [k, v] of Object.entries(combo)) fw[k] = function* () { for (const n of v.split(' ')) yield* fw[n](); };
-    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd', 'can_cm'];
+    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd', 'can_cm', 'debug_beep'];
 
     read_sensor();   // ค่าเริ่มต้นของเซนเซอร์ ให้ภาพแรกแสดงถูกก่อนกดเล่น
     return { r, st, field, fw, VARS, sensorPos, analogRead, onBlackAt: (x, y) => onBlack(field, x, y) };
@@ -1198,8 +1212,8 @@ const SIM = (() => {
         stmt = stmt.replace(/^[{}\s]+|[{}\s]+$/g, '');
         if (!stmt) continue;
         if (stmt === 'return') { out.push({ name: 'return', args: [], line: i }); continue; }
-        let m = stmt.match(/^([A-Za-z_]\w*)\s*=\s*(-?\d+)$/);
-        if (m) { if (VARS.includes(m[1])) out.push({ name: '=', v: m[1], args: [+m[2]], line: i }); else errors.push({ line: i, msg: `ไม่รู้จักตัวแปร ${m[1]}` }); continue; }
+        let m = stmt.match(/^([A-Za-z_]\w*)\s*=\s*(-?\d+|true|false)$/);
+        if (m) { if (VARS.includes(m[1])) out.push({ name: '=', v: m[1], args: [m[2] === 'true' ? 1 : m[2] === 'false' ? 0 : +m[2]], line: i }); else errors.push({ line: i, msg: `ไม่รู้จักตัวแปร ${m[1]}` }); continue; }
         m = stmt.match(/^([A-Za-z_]\w*)\s*\(([^)]*)\)$/);
         if (!m) { errors.push({ line: i, msg: `อ่านไม่ออก: ${stmt}` }); continue; }
         const name = m[1];
@@ -1314,6 +1328,7 @@ const SIM = (() => {
   speed_cross = 95;     // ความเร็ว cross_down
   time_cross = 200;     // เวลา cross_down (ms) จูนสำหรับตัวจำลอง
   can_cm = 30;          // ระยะที่นับว่ามีกระป๋อง (cm)
+  debug_beep = false;   // true = บี๊บบอกแยกที่เห็น (ปิดตอนแข่ง)
 
   FL(); cross();                       // ขอบบนกล่องเริ่ม วิ่งข้ามไป
 ${rows.join('\n')}
@@ -1607,10 +1622,10 @@ if (typeof module !== 'undefined') module.exports = SIM;
       ctx.fillStyle = so.cm < 999 ? COL.o : COL.ink3; ctx.font = `600 ${Math.max(11, 3 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(so.cm < 999 ? so.cm + ' cm' : 'ไม่เจอ', tx, ty);
     }
-    if (r.beepAt != null && r.t - r.beepAt < 700) {
+    if (r.beepAt != null && r.t - r.beepAt < 900) {
       const [tx, ty] = P(r.x, r.y - 15);
       ctx.fillStyle = COL.o; ctx.font = `700 ${Math.max(12, 3.4 * s)}px "Mitr", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('บี๊บ', tx, ty);
+      ctx.fillText(r.beepLabel || 'บี๊บ', tx, ty);
     }
   }
   function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
