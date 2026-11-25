@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.ino": "cpp"
+  },
+  "C_Cpp.errorSquiggles": "disabled",
+  "arduino.useArduinoCli": true,
+  "arduino.path": "C:\\Users\\acer\\AppData\\Local\\Programs\\Arduino IDE\\resources\\app\\lib\\backend\\resources"
+}
