@@ -396,6 +396,27 @@ code { border-radius: 6px; }
 .eta { margin: 0; font-size: 16px; color: var(--ink); }
 .eta b { font-family: var(--disp); }
 .eta-note { margin: 0; font-size: 13px; color: var(--ink-3); }
+
+/* อัปเดตและฟีเจอร์ใหม่ */
+.clog { max-width: 860px; margin-top: 10px; }
+.day { margin: 0 0 56px; }
+.day-h { font: 600 26px/1.3 var(--disp); margin: 0 0 8px; padding-bottom: 8px; border-bottom: 3px solid var(--rule); }
+.rel { padding: 20px 0 22px; border-bottom: 1px solid var(--rule); }
+.rel:last-child { border-bottom: 0; }
+.rel > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.rel h4 { font: 600 20px/1.3 var(--disp); margin: 0; }
+.rel .when { color: var(--ink-3); font-size: 15px; font-variant-numeric: tabular-nums; }
+.rel .dl { margin-left: auto; font: 600 15px/1.2 var(--disp); }
+.rel ul { margin: 10px 0 0; padding-left: 1.3em; max-width: 68ch; }
+.rel li { margin: .4em 0; }
+
+.more { margin: 8px 0 4px; max-width: 68ch; }
+.more > summary { cursor: pointer; width: max-content; font: 600 14px/1.4 var(--disp); color: var(--navy); padding: 2px 0; }
+.more > summary:hover { text-decoration: underline; }
+.more[open] { padding: 6px 0 6px 14px; border-left: 1px solid var(--rule); }
+.more .use { margin-top: 6px; }
+.more .tbl { font-size: 15px; }
+.more-note, .more-links { font-size: 15px; color: var(--ink-3); margin: 8px 0 0; }
 </style>
 </head>
 <body>
@@ -423,6 +444,7 @@ code { border-radius: 6px; }
     <div class="start">START</div>
     <div class="seg lvl-seg" role="group" aria-label="ระดับการแข่ง"><button type="button" data-lvl="mid" aria-pressed="true">ระดับกลาง</button><button type="button" data-lvl="hi" aria-pressed="false">ระดับสูง</button></div>
     <nav id="toc">
+      <a href="#changelog">อัปเดตและฟีเจอร์ใหม่</a>
       <a href="#how">หุ่นทำงานยังไง</a>
       <a class="sub" href="#calibrate">วิธี calibrate</a>
       <a href="#eyes">ตาของหุ่น: เซนเซอร์ 5 ตัว</a>
@@ -445,6 +467,27 @@ code { border-radius: 6px; }
   </aside>
 
   <main class="main">
+
+    <section class="sec" id="changelog">
+      <h2>อัปเดตและฟีเจอร์ใหม่</h2>
+      <p class="lede">โค้ดหุ่นแต่ละชุดที่ปล่อยบน GitHub เรียงจากใหม่ไปเก่า แยกตามวัน ฟังก์ชันสำคัญมีปุ่ม <b>อธิบายละเอียด</b> กดเพื่อดูวิธีใช้และข้อระวัง กดดาวน์โหลดเพื่อโหลดชุดนั้น</p>
+      <div class="clog">
+      <div class="day"><h3 class="day-h"><time datetime="2026-11-25">25 พ.ย. 2569</time></h3>
+        <article class="rel web"><header><h4>เว็บคู่มือ</h4></header><ul><li>ตารางตั้งค่าตรงกับโค้ดชุดล่าสุด: <code>Speed_motor(200)</code> <code>speed_trun = 255;</code> <code>can_cm = 25;</code> <code>end_pat = "1312";</code></li><li>เพิ่ม <code>Set_kp_gain(3)</code> <span class="tag new">ใหม่</span></li><li><code>can_L</code> <code>can_R</code> <code>can_LR</code> และ <code>cheak_can_*</code> ขากลับใช้ <code>FLJ</code> ตัวจำลองในเว็บเปลี่ยนตามแล้ว</li><li>ไม่เจอกระป๋อง = ไม่มีเสียงบี๊บแล้ว (ตรงกับไฟล์ที่ปล่อย)</li><li>เพิ่มคำเตือน calibrate ใหม่เมื่อเปลี่ยน ADC_DIV และเพิ่มหน้าอัปเดตนี้</li></ul></article>
+        <article class="rel" id="rel-code-2026-11-25b"><header><h4>รอบ 2 <span class="tag new">ล่าสุด</span></h4><span class="when">16:50 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-25b">ดาวน์โหลด code-2026-11-25b</a></header><ul><li><b>ขากลับจากเส้นแยกใช้ FLJ แทน FL</b> ใน <code>can_L</code> <code>can_R</code> <code>can_LR</code> <code>cheak_can_L</code> <code>cheak_can_R</code> <code>cheak_can_LR</code> หุ่นไม่พลาดแยกที่วางเอียง<details class="more" open><summary>อธิบายละเอียด</summary><dl class="use"><dt>ใช้ทำอะไร</dt><dd>ขากลับจากปลายเส้นแยก หุ่นวิ่งกลับมาที่แยกหลัก ตอนนี้ใช้ <code>FLJ</code> หยุดที่แยก (เดิมใช้ <code>FL</code>)</dd><dt>ทำไมต้องเปลี่ยน</dt><dd><code>FL</code> ต้องให้เซนเซอร์ซ้ายสุดและขวาสุดเห็นเส้นขวางพร้อมกัน ถ้าหุ่นกลับมาเอียงหรือแยกวางเอียง มันมองไม่เห็นแล้ววิ่งเลยไปแยกถัดไป ส่วน <code>FLJ</code> หยุดเมื่อเห็นแยกข้างใดข้างหนึ่ง</dd><dt>ต้องแก้ Mission ไหม</dt><dd>ไม่ต้อง เขียน <code>can_L();</code> <code>can_R();</code> <code>can_LR();</code> เหมือนเดิม การเปลี่ยนอยู่ในตัวคำสั่งเอง</dd><dt>ใช้กับ</dt><dd><code>can_L</code> <code>can_R</code> <code>can_LR</code> และ <code>cheak_can_L</code> <code>cheak_can_R</code> <code>cheak_can_LR</code></dd></dl><p class="more-links"><a href="#c-can">คำอธิบายเต็มของ can_L / can_R / can_LR</a> · <a href="#c-FLJ">คำอธิบายเต็มของ FLJ</a></p></details></li><li>ค่าเริ่มต้นใน <code>Mission()</code> เป็นค่าของหุ่นตัวนี้: <code>Set_kp(30)</code> <code>Set_kp_gain(3)</code> <code>Speed_motor(200)</code> <code>Speed_LR(120, 120)</code> <code>speed_trun = 255;</code> <code>speed_cross = 95;</code> <code>time_cross = 175;</code> <code>can_cm = 25;</code> <code>end_pat = "1312";</code></li><li>ปิดเสียงและ debug ทั้งหมด (<code>debug_beep = false;</code> <code>coin_on = false;</code>) เส้นทางใน <code>Mission()</code> ว่าง ให้เขียนเอง</li><li>เปลี่ยน ADC_DIV แล้ว calibrate ใหม่ <span class="tag o">ต้องทำ</span></li></ul></article>
+        <article class="rel" id="rel-code-2026-11-25"><header><h4>รอบ 1</h4><span class="when">13:43 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-25">ดาวน์โหลด code-2026-11-25</a></header><ul><li>รวมการแก้ช่วง 24-25 พ.ย.</li><li><code>FLJ</code> จับแยกตอนวิ่งเร็วได้ดีขึ้น: จำไว้ว่าเซนเซอร์ริมเพิ่งเห็นเส้นดำเมื่อครู่ (ราว 0.03 วิ) แล้วค่อยเช็คตัวกลาง <span class="tag hi">ระดับสูง</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt>ใช้ทำอะไร</dt><dd>ทำให้ <code>FLJ</code> จับเส้นแยกได้แม่นขึ้นตอนหุ่นวิ่งเร็ว</dd><dt>ปัญหาเดิม</dt><dd>ตอนวิ่งเร็วเส้นแยกผ่านเซนเซอร์ริมไปแล้วก่อนที่ตัวกลางจะเห็น หุ่นเลยพลาดแยก</dd><dt>ตอนนี้</dt><dd>ถ้าเซนเซอร์ริมเพิ่งเห็นเส้นดำเมื่อไม่ถึง 0.03 วิ แล้วตัวกลางเห็นดำ ก็นับเป็นแยก (ค่า <code>LATCH_MS</code> = 30 ในโค้ด) และ <code>FLJ</code> จดไว้ว่าเห็นแขนข้างไหน เพื่อให้ <code>can_auto</code> ไม่ข้ามแยกนั้น</dd><dt>แยกบนโค้งขวา</dt><dd>ตั้ง <code>WIDE_R</code> เป็น 1 ให้เซนเซอร์ C[3] ช่วยจับแทน C[2] เพราะบนโค้งขวาเส้นหลักเอียงไปอยู่ C[3] ถ้าเห็นแยกหลอกบนโค้งขวา ตั้งเป็น 0 ฝั่งซ้าย <code>WIDE_L</code> ปิดไว้ (0) เพราะโค้งซ้ายทำให้เห็นแยกหลอกเอง</dd><dt>ต้องแก้ Mission ไหม</dt><dd>ไม่ต้อง ค่าพวกนี้เป็น <code>#define</code> ใน <code>TRT_arduino_nano.ino</code> เรียก <code>FLJ();</code> เหมือนเดิม</dd></dl><p class="more-links"><a href="#c-FLJ">คำอธิบายเต็มของ FLJ</a></p></details></li><li><code>FLJ</code> จดว่าเห็นแขนแยกข้างไหน <code>can_auto</code> เลยไม่ข้ามแยกที่เห็นไปแล้ว <span class="tag hi">ระดับสูง</span></li><li>แยกบนโค้งขวา: แขนขวาให้เซนเซอร์ C[3] ช่วยจับได้ (ตั้ง <code>WIDE_R</code> ในโค้ด) ฝั่งซ้ายปิดไว้ เพราะโค้งซ้ายทำให้เห็นแยกหลอก <span class="tag hi">ระดับสูง</span></li><li><code>Set_kp_gain(x)</code>: ความแรงเลี้ยวกลับเข้าเส้นเพิ่มเองตามความเบี่ยง โค้งแรงขึ้นเอง ใส่ 0 = ปิด <span class="tag new">ใหม่</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt>ใช้ทำอะไร</dt><dd>ให้หุ่นแก้เส้นแรงขึ้นเองเมื่อเบี่ยงออกจากเส้นมาก โค้งแรงจึงไม่หลุด ส่วนทางตรงที่เบี่ยงนิดเดียวยังนิ่งเหมือนเดิม</dd><dt>ใช้ตอนไหน</dt><dd>ใส่ต่อจาก <code>Set_kp</code> ต้น Mission: <code>Set_kp(30); Set_kp_gain(3);</code> หุ่นหลุดโค้งแรง ลองเพิ่มทีละ 1 หุ่นส่ายบนทางตรง ลดลงหรือใส่ 0</dd><dt>เกิดอะไร</dt><dd>ความแรงที่ใช้จริง = <code>Set_kp</code> + <code>gain</code> × ระดับที่เบี่ยง (error) ตัวอย่างด้านล่างใช้ Kp 30 กับ gain 3</dd></dl><div class="tbl-wrap"><table class="tbl"><thead><tr><th>เส้นอยู่ตรงไหน</th><th>error</th><th><code>Set_kp(30)</code> ไม่มี gain</th><th><code>Set_kp_gain(3)</code></th></tr></thead><tbody><tr><td>เยื้องนิดเดียว</td><td>1</td><td>แรง 30</td><td>แรง 33</td></tr><tr><td>อยู่ข้างๆ (ตัวถัดจากกลาง)</td><td>5</td><td>แรง 30</td><td>แรง 45</td></tr><tr><td>อยู่ริมสุด</td><td>7</td><td>แรง 30</td><td>แรง 51</td></tr></tbody></table></div><p class="more-note">ใส่ <code>Set_kp_gain(0);</code> = ปิด ทำงานเหมือนชุดก่อนหน้า ตัวจำลองในเว็บยังไม่คิดค่านี้ ต้องจูนบนหุ่นจริง</p><p class="more-links"><a href="#g-setup">ตารางตั้งค่า</a></p></details></li><li>อ่านค่าเซนเซอร์เร็วขึ้น (ADC_DIV) calibrate ใหม่ <span class="tag o">ต้องทำ</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt>ใช้ทำอะไร</dt><dd>ปรับความเร็วที่บอร์ดอ่านค่าเซนเซอร์ อ่านเร็วขึ้นหุ่นเห็นเส้นแยกทันตอนวิ่งเร็ว</dd><dt>ตัวเลือก (<code>ADC_DIV</code> ใน TRT_arduino_nano.ino)</dt><dd><code>0x04</code> เร็วที่สุด · <code>0x05</code> เร็ว (ค่าในชุดนี้) · <code>0x06</code> กลาง · <code>0x07</code> ช้า (ค่าเดิมของบอร์ด)</dd><dt>ต้องทำเสมอ</dt><dd>เปลี่ยนค่าแล้ว <b>ต้อง calibrate ใหม่</b> ค่าขาว/ดำที่เก็บไว้เดิมอ่านจากความเร็วเก่า ใช้ต่อไม่ได้ หุ่นจะวิ่งเพี้ยน</dd><dt>ข้อแนะนำ</dt><dd>เปลี่ยนทีละอย่าง ถ้าเปลี่ยน <code>ADC_DIV</code> พร้อมความเร็วหุ่นหรือค่าอื่นในรอบเดียว จะไม่รู้ว่าอะไรช่วยหรืออะไรทำให้แย่ลง</dd></dl><p class="more-links"><a href="#calibrate">วิธี calibrate</a></p></details></li><li>ไม่มีวงจรวัดแบต (ไม่มีตัวแบ่งแรงดันที่ A6) ยังไม่มีคำสั่งวัดแบต</li><li><span class="tag">ยังไม่ได้ลองบนหุ่นจริงครบ</span></li></ul></article>
+      </div>
+      <div class="day"><h3 class="day-h"><time datetime="2026-11-23">23 พ.ย. 2569</time></h3>
+        <article class="rel" id="rel-code-2026-11-23c"><header><h4>รอบ 3 (auto_run)</h4><span class="when">18:36 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-23c">ดาวน์โหลด code-2026-11-23c</a></header><ul><li><code>auto_run()</code>: วิ่งเองทั้งสนาม (<code>FLJ</code> + <code>can_auto</code> ซ้ำ) จอดเมื่อเจอลำดับแยก <code>end_pat</code> <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt>ใช้ทำอะไร</dt><dd>วิ่งเองทั้งสนามโดยไม่ต้องเขียนทีละแยก เหมาะกับระดับสูงที่กระป๋องสลับที่ทุกรอบ</dd><dt>ใช้ตอนไหน</dt><dd>เขียนบรรทัดเดียวใน Mission: <code>auto_run();</code> ไม่ต้องมี <code>FL_C();</code> ข้างหน้า มันออกจากกล่องเอง</dd><dt>end_pat คืออะไร</dt><dd>ลำดับแยกท้ายสนามก่อนเข้ากล่อง เขียนตามลำดับที่หุ่นวิ่งผ่าน: 1 = ซ้าย 2 = ขวา 3 = สองข้าง เช่น <code>"1312"</code> = ซ้าย, สองข้าง, ซ้าย, ขวา แล้วเข้ากล่อง ใส่ได้สูงสุด 15 ตัว ห้ามเว้นว่าง</dd><dt>หุ่นทำอะไร</dt><dd>ทำ <code>FLJ(); can_auto();</code> ซ้ำไปเรื่อยๆ จำแยกล่าสุดไว้ พอแยกที่ผ่านมาตรงกับ <code>end_pat</code> ครบ จะทำ <code>FL(); cross();</code> เข้ากล่องแล้วจบ หุ่นหลุดแล้วยกมาวางกลับก็ยังจอดถูก เพราะดูแค่แยกล่าสุด</dd><dt>วันแข่ง</dt><dd>ดูสนามแล้วจดลำดับแยกท้าย ใส่ใน <code>end_pat</code> ซ้อมโดยเปิด <code>debug_beep = true;</code> ฟังว่าเสียงช่วงท้ายตรงกับที่จดทุกรอบไหม</dd><dt>ข้อระวัง</dt><dd>พลาดแยกเดียวในลำดับ หุ่นจะไม่จอด และลำดับเดียวกันอาจโผล่กลางสนามแล้วจบก่อน ยังไม่ได้ลองบนหุ่นจริงครบ</dd></dl><p class="more-links"><a href="#c-auto_run">คำอธิบายเต็มของ auto_run</a> · <a href="#c-can_auto">can_auto</a></p></details></li><li><code>end_pat = "32112";</code> ตั้งลำดับแยกท้ายสนาม 1 = ซ้าย 2 = ขวา 3 = สองข้าง <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span></li><li>เช็คกระป๋อง: ไม่เจอตรงกลาง หุ่นส่ายซ้ายแล้วขวา แล้วเช็คซ้ำ<details class="more"><summary>อธิบายเพิ่ม</summary><dl class="use"><dt>เกิดอะไร</dt><dd>เช็คกระป๋องตรงกลางก่อน ถ้าไม่เจอ หุ่นส่ายซ้ายแล้วขวาเล็กน้อย หยุดแล้วยิง ultrasonic ซ้ำทีละข้าง (ไม่ยิงตอนกำลังหมุน เพราะทดสอบแล้วแม่นน้อยกว่า)</dd><dt>ทำไม</dt><dd>หุ่นที่เลี้ยวเข้าเส้นแยกอาจหันไม่ตรงกระป๋อง เช็คตรงกลางอย่างเดียวจึงพลาด</dd></dl></details></li><li>ultrasonic ต่อ Trig = D11, Echo = D13</li><li>เส้นทางใน <code>Mission()</code> เว้นว่างไว้ให้เขียนเอง</li><li><span class="tag">ยังไม่ได้ลองบนหุ่นจริงครบ</span></li></ul></article>
+        <article class="rel" id="rel-code-2026-11-23b"><header><h4>รอบ 2 (debug_beep, เสียงเหรียญ)</h4><span class="when">13:50 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-23b">ดาวน์โหลด code-2026-11-23b</a></header><ul><li><code>debug_beep = true;</code>: <code>can_auto</code> บี๊บบอกแยกที่เห็น 1 = ซ้าย 2 = ขวา 3 = สองข้าง ตอนแข่งตั้ง <code>false</code> <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt><code>debug_beep = true;</code></dt><dd>หลังข้ามแยก <code>can_auto</code> บี๊บสั้นบอกว่าเห็นแยกแบบไหน นับจำนวนครั้ง ไม่ต้องแยกเสียงสูงต่ำ: 1 ครั้ง = ซ้าย · 2 ครั้ง = ขวา · 3 ครั้ง = สองข้าง</dd><dt>เมื่อไหร่ใช้</dt><dd>ตอนซ้อมเพื่อเช็กว่าหุ่นอ่านแยกถูกไหม ตอนแข่งตั้ง <code>false</code> (ชุดที่ปล่อยตั้งไว้ <code>false</code> แล้ว)</dd><dt><code>coin_on = true;</code></dt><dd>หลัง <code>push()</code> ดันกระป๋องเสร็จ หุ่นเล่นเสียงเหรียญแบบ Mario เป็นสัญญาณว่าดันแล้ว ชุดที่ปล่อยปิดไว้</dd></dl><p class="more-links"><a href="#g-high">ตารางเสียงเต็มในหมวดระดับสูง</a></p></details></li><li>ไม่เจอกระป๋อง = บี๊บยาว 1 ครั้ง และอ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง</li><li><code>coin_on = true;</code>: เล่นเสียงเหรียญ Mario หลัง <code>push()</code> <span class="tag new">ใหม่</span></li></ul></article>
+        <article class="rel" id="rel-code-2026-11-23"><header><h4>ชุดแรกของระดับสูง (ultrasonic)</h4><span class="when">10:08 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-23">ดาวน์โหลด code-2026-11-23</a></header><ul><li><code>FLJ()</code>: วิ่งตามเส้นจนเจอแยกข้างไหนก็ได้ (กันโค้งหลอก) <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span><details class="more"><summary>อธิบายละเอียด</summary><dl class="use"><dt><code>FLJ()</code></dt><dd>วิ่งตามเส้นจนเจอแยกข้างไหนก็ได้ ต่างจาก <code>FLR</code> / <code>FLL</code> ที่ดูข้างเดียว และ <code>FL</code> ที่ต้องเห็นสองข้างพร้อมกัน ต้องเห็นเซนเซอร์ริมกับตัวกลางดำพร้อมกัน โค้งเส้นเดียวจึงไม่หลอก ใส่ตัวเลขได้: <code>FLJ(500);</code> = 0.5 วิแรกไม่สนแยก ใช้ข้ามโค้งหรือแยกที่ไม่ต้องการ</dd><dt><code>can_auto()</code></dt><dd>ใช้ต่อจาก <code>FLJ()</code> ข้ามแยก ดูว่าเห็นแขนข้างไหน แล้วเลี้ยวเข้าเช็คกระป๋องทีละเส้นแยก มีกระป๋อง = ดันแล้วกลับ ไม่มี = เลี้ยวกลับ ใส่ตัวเลข = ระยะ cm เฉพาะครั้งนั้น</dd><dt><code>cheak_can_L / R / LR</code></dt><dd>เหมือน <code>can_L</code> / <code>can_R</code> / <code>can_LR</code> แต่เช็คด้วย ultrasonic ก่อน ใช้เมื่อรู้ว่าเส้นแยกอยู่ข้างไหนแต่ไม่รู้ว่ามีกระป๋องไหม</dd><dt><code>FL_U(cm)</code></dt><dd>วิ่งตามเส้นจนเจอของใกล้กว่า cm แล้วเบรก ถ้าไม่มีเสียงสะท้อนถือว่าไกลมาก</dd><dt><code>can_cm</code></dt><dd>ระยะที่นับว่ามีกระป๋อง ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก ใช้เป็นค่าเริ่มต้นเมื่อไม่ใส่ตัวเลขในวงเล็บ</dd></dl><p class="more-links"><a href="#g-high">หมวดระดับสูงทั้งหมด</a> · <a href="#c-FLJ">FLJ</a> · <a href="#c-can_auto">can_auto</a> · <a href="#c-FL_U">FL_U</a></p></details></li><li><code>can_auto()</code>: ดูเองว่าแยกเดียวหรือแยกคู่ แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span></li><li><code>cheak_can_L()</code> <code>cheak_can_R()</code> <code>cheak_can_LR()</code>: เช็คกระป๋องก่อนดัน <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span></li><li><code>FL_U(cm)</code>: วิ่งตามเส้นจนเจอของข้างหน้า <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span></li><li><code>can_cm = 30;</code>: ระยะที่นับว่ามีกระป๋อง <span class="tag hi">ระดับสูง</span> <span class="tag new">ใหม่</span></li><li>เส้นทางระดับกลางเดิมไม่เปลี่ยน</li><li><span class="tag">ยังไม่ได้ลองบนหุ่นจริงครบ</span></li></ul></article>
+      </div>
+      <div class="day"><h3 class="day-h"><time datetime="2026-11-18">18 พ.ย. 2569</time></h3>
+        <article class="rel" id="rel-code-2026-11-18"><header><h4>ชุดแรก</h4><span class="when">13:34 น.</span><a class="dl" href="https://github.com/LunarisElf/trt-robot-guide/releases/tag/code-2026-11-18">ดาวน์โหลด code-2026-11-18</a></header><ul><li>ชุดโค้ดแรกบน GitHub: <code>TRT_arduino_nano.ino</code> กับ <code>Mission.ino</code> คำสั่งพื้นฐานของระดับกลางตามที่อธิบายในคู่มือนี้</li><li>compile ผ่าน ใช้หน่วยความจำ 8872 bytes</li></ul></article>
+        <article class="rel web"><header><h4>เว็บคู่มือ</h4></header><ul><li>เปิดเว็บคู่มือ พร้อมหุ่นจำลองที่รันคำสั่งชุดเดียวกับในบอร์ด</li></ul></article>
+      </div>
+      </div>
+    </section>
 
     <section class="sec" id="how">
       <h2>หุ่นทำงานยังไง</h2>
@@ -471,6 +514,7 @@ code { border-radius: 6px; }
           <br>เสียงยาว 1 ครั้ง = ไม่สำเร็จ ไม่บันทึก วางให้เส้นอยู่กลางหุ่นมากขึ้น แล้วทำข้อ 1 ใหม่</li>
         <li><b>ปิดเครื่อง แล้วเปิดใหม่ (ไม่ต้องกดปุ่ม)</b> หุ่นพร้อมวิ่ง ค่าถูกจำไว้ ปิดเครื่องก็ไม่หาย</li>
       </ol>
+      <div class="can-note warn"><span class="can" aria-hidden="true"></span><p>โค้ดตั้งแต่ชุด 25 พ.ย. 2569 อ่านเซนเซอร์เร็วกว่าชุดก่อนหน้า (ปรับ ADC_DIV) ถ้าอัปโค้ดจากชุดเก่า หรือเปลี่ยนค่า ADC_DIV <b>ต้อง calibrate ใหม่</b> ค่าที่เก็บไว้เดิมใช้ไม่ได้</p></div>
       <div class="sim calib" id="calibDemo"></div>
     </section>
 
@@ -510,9 +554,19 @@ code { border-radius: 6px; }
         <p class="lede">เส้นอยู่ซ้าย ล้อขวาหมุนเร็วขึ้น ล้อซ้ายช้าลง หุ่นจึงเลี้ยวกลับเข้าหาเส้น เส้นยิ่งไกลจากกลาง ยิ่งเลี้ยวแรง</p>
         <ul>
           <li><b>Kp</b> คือความแรงในการเลี้ยวกลับ น้อยไปหุ่นหลุดโค้ง มากไปหุ่นส่าย</li>
+          <li><b>Kp gain</b> <span class="tag new">ใหม่</span> คือตัวเพิ่ม Kp ตามที่หุ่นเบี่ยง ยิ่งเส้นอยู่ไกลจากกลาง ยิ่งเลี้ยวกลับแรงขึ้นเอง ทางตรงจึงไม่ส่าย แต่โค้งแรงไม่หลุด ตั้งด้วย <code>Set_kp_gain(3);</code> (0 = ปิด)</li>
           <li>ถ้าหลุดเส้นไปทางริม หุ่นจะ <b>หมุนตัวอยู่กับที่</b> จนเจอเส้นอีกครั้ง</li>
           <li>ทุกครั้งที่ออกตัวจากหยุดนิ่ง หุ่นจะ <b>ค่อยๆ เร่ง</b> ไม่ให้หน้ายก</li>
         </ul>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>เส้นอยู่ตรงไหน</th><th>ไม่มี gain <code>Set_kp(30)</code></th><th>มี gain <code>Set_kp_gain(3)</code></th></tr></thead>
+          <tbody>
+            <tr><td>เยื้องนิดเดียว</td><td>เลี้ยวแรง 30</td><td>เลี้ยวแรง 33</td></tr>
+            <tr><td>อยู่ข้างๆ ตัวกลาง</td><td>เลี้ยวแรง 30</td><td>เลี้ยวแรง 45</td></tr>
+            <tr><td>อยู่ริมสุด</td><td>เลี้ยวแรง 30</td><td>เลี้ยวแรง 51</td></tr>
+          </tbody>
+        </table></div>
+        <p>ความแรงที่ใช้จริง = <code>Set_kp</code> + <code>gain</code> × ระดับที่เบี่ยง หุ่นหลุดโค้งแรง เพิ่ม gain ทีละ 1 หุ่นส่ายบนทางตรง ลด gain หรือใส่ 0 ตัวจำลองในเว็บยังไม่คิดค่านี้ ต้องจูนบนหุ่นจริง</p>
       </div>
     </section>
 
@@ -533,13 +587,15 @@ code { border-radius: 6px; }
         <thead><tr><th>คำสั่ง</th><th>ใช้ทำอะไร</th></tr></thead>
         <tbody>
           <tr><td><code>Set_kp(30)</code></td><td>ความแรงในการเลี้ยวกลับเข้าเส้น ทางโค้งเยอะใส่มาก (20-30) ทางตรงใส่น้อย (10-20)</td></tr>
-          <tr><td><code>Speed_motor(255)</code></td><td>ความเร็วตอนวิ่งตามเส้น (สูงสุด 255)</td></tr>
+          <tr><td><code>Set_kp_gain(3)</code> <span class="tag new">ใหม่</span></td><td>ยิ่งหุ่นเบี่ยงจากเส้นมาก ยิ่งเลี้ยวกลับแรงขึ้นเอง (แรงจริง = Set_kp + gain × ระดับที่เบี่ยง) ใส่เลขเล็กๆ เช่น 2-3 ใส่ 0 = ปิด ดูตัวอย่างที่ <a href="#pid">วิ่งตามเส้นยังไง</a> <span class="tag">ตัวจำลองยังไม่คิดค่านี้</span></td></tr>
+          <tr><td><code>Speed_motor(200)</code></td><td>ความเร็วตอนวิ่งตามเส้น (สูงสุด 255)</td></tr>
           <tr><td><code>Speed_LR(120, 120)</code></td><td>ความเร็วของ GO, GB, R, L (ตัวแรก = ล้อขวา ตัวที่สอง = ล้อซ้าย)</td></tr>
-          <tr><td><code>speed_trun = 150;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
+          <tr><td><code>speed_trun = 255;</code></td><td>ความเร็วตอนเลี้ยว TL / TR</td></tr>
           <tr><td><code>speed_cross = 95;</code></td><td>ความเร็วตอน cross_down</td></tr>
           <tr class="lvl-hi"><td><code>debug_beep = false;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใส่ <code>true</code> ตอนทดสอบ: หลังข้ามแยก can_auto จะบี๊บสั้นบอกว่าเห็นแยกแบบไหน (ตารางด้านล่าง) ตอนแข่งใส่ <code>false</code></td></tr>
-          <tr class="lvl-hi"><td><code>end_pat = "32112";</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใช้กับ auto_run: ลำดับแยกสุดท้ายก่อนเข้ากล่อง เขียนตามลำดับที่หุ่นวิ่งผ่าน 1 = ซ้าย 2 = ขวา 3 = สองข้าง</td></tr>
-          <tr class="lvl-hi"><td><code>can_cm = 30;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
+          <tr class="lvl-hi"><td><code>end_pat = "1312";</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ใช้กับ auto_run: ลำดับแยกสุดท้ายก่อนเข้ากล่อง เขียนตามลำดับที่หุ่นวิ่งผ่าน 1 = ซ้าย 2 = ขวา 3 = สองข้าง</td></tr>
+          <tr><td><code>coin_on = false;</code></td><td>ใส่ <code>true</code> ให้หุ่นเล่นเสียงเหรียญ Mario หลังดันกระป๋องเสร็จ (ชุดที่ปล่อยบน GitHub ปิดไว้ ตัวจำลองไม่มีเสียง)</td></tr>
+          <tr class="lvl-hi"><td><code>can_cm = 25;</code> <span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></td><td>ระยะ (cm) ที่ ultrasonic นับว่ามีกระป๋อง ใช้กับ can_auto / cheak_can ต้องยาวกว่าระยะจากหน้าหุ่นถึงกระป๋องที่ปลายเส้นแยก</td></tr>
           <tr><td><code>time_cross = 175;</code></td><td>ระยะเวลาของ cross_down (เลี้ยวแล้วเอียง ให้ปรับค่านี้)</td></tr>
         </tbody>
       </table>
@@ -548,7 +604,7 @@ code { border-radius: 6px; }
       <div class="lvl-hi">
       <h3 class="group-h" id="g-high">ระดับสูง: เช็คกระป๋องด้วย ultrasonic <span class="tag new">ใหม่</span></h3>
       <p>ระดับสูงกระป๋องสลับที่ทุกรอบ และมีเส้นแยกหลอกที่ไม่มีกระป๋อง คำสั่งกลุ่มนี้ใช้ ultrasonic (เซ็นเซอร์วัดระยะด้านหน้า ต่อ Trig = D11, Echo = D13) เช็คก่อนดัน คำสั่งกลุ่มอื่นข้างล่างใช้ได้ทั้งสองระดับ</p>
-      <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 30;</code></p>
+      <p>ตั้งระยะที่นับว่ามีกระป๋องไว้บนสุดของ Mission: <code>can_cm = 25;</code></p>
       <p>ตอนหุ่นวิ่งไม่มีสาย Serial ให้ฟังเสียงแทน (นับจำนวนครั้ง ไม่ต้องแยกเสียงสูงต่ำ):</p>
       <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>เสียง</th><th>ความหมาย</th></tr></thead>
@@ -557,9 +613,10 @@ code { border-radius: 6px; }
           <tr><td>บี๊บสั้น 2 ครั้ง</td><td>เห็นเส้นแยกขวา</td></tr>
           <tr><td>บี๊บสั้น 3 ครั้ง</td><td>เห็นสองข้าง (แยกคู่)</td></tr>
           <tr><td>ไม่มีเสียงหลังข้ามแยก</td><td>ไม่เห็นเส้นแยกเลย หุ่นจะวิ่งต่อ (น่าจะเป็นโค้งหลอก หรือพลาดแยก)</td></tr>
-          <tr><td>บี๊บ<b>ยาว</b> 1 ครั้งหลังเลี้ยวเข้าเส้นแยก</td><td>ไม่เจอกระป๋อง (ทำงานเสมอ ไม่ต้องเปิด debug_beep)</td></tr>
+          <tr><td>ไม่มีเสียงหลังเลี้ยวเข้าเส้นแยก แล้วหุ่นเลี้ยวกลับทันที</td><td>ไม่เจอกระป๋อง (ชุดที่ปล่อยบน GitHub ไม่มีบี๊บนี้แล้ว)</td></tr>
         </tbody>
       </table></div>
+      <p>ไฟล์โค้ดที่ปล่อยบน GitHub (Release) <b>ปิดเสียงและ debug ทั้งหมด</b> (<code>debug_beep = false;</code> <code>coin_on = false;</code>) ถ้าอยากฟังเสียงตอนทดสอบ ให้เปิดเองในโค้ดในเครื่อง</p>
 
       <article class="cmd" id="c-FLJ">
         <header><h3>FLJ() <span class="alt">/ FLJ(ms)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>เจอเส้นแยกข้างไหนก็ได้</span></header>
@@ -573,7 +630,7 @@ code { border-radius: 6px; }
         <header><h3>can_auto() <span class="alt">/ can_auto(cm)</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>จัดการแยกให้เองทั้งหมด: ดูว่าเส้นแยกอยู่ซ้าย ขวา หรือสองข้าง แล้วเช็คกระป๋องทุกเส้นแยกด้วย ultrasonic</dd>
         <dt>ใช้ตอนไหน</dt><dd>หลัง FLJ() ที่แยกที่ไม่รู้ว่ามีกระป๋องไหม หรือมีแยกหลอก</dd>
-        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก อ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง (กันเสียงสะท้อนเพี้ยนครั้งเดียว) ไม่เจอตรงกลาง หุ่นส่ายซ้ายแล้วขวาเล็กน้อย หยุดยิงซ้ำทีละข้าง มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับ จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
+        <dt>เกิดอะไร</dt><dd>ข้ามแยกช้าๆ แล้วเลี้ยวเข้าไปดูทีละเส้นแยก อ่าน ultrasonic 3 ครั้งแล้วใช้ค่ากลาง (กันเสียงสะท้อนเพี้ยนครั้งเดียว) ไม่เจอตรงกลาง หุ่นส่ายซ้ายแล้วขวาเล็กน้อย หยุดยิงซ้ำทีละข้าง มีกระป๋อง = ดันแล้วกลับ ไม่มี = เลี้ยวกลับ (ไม่มีเสียงบอก) จบแล้วหันไปทางเดิม ถ้าไม่เห็นเส้นแยกเลย วิ่งต่อ</dd></dl>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>เห็นเส้นแยก</th><th>หุ่นทำ</th></tr></thead>
           <tbody>
@@ -594,7 +651,7 @@ code { border-radius: 6px; }
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>end_pat</th><th>ความหมาย</th></tr></thead>
           <tbody>
-            <tr><td><code>"32112"</code></td><td>สองข้าง ขวา ซ้าย ซ้าย ขวา แล้วเข้ากล่อง</td></tr>
+            <tr><td><code>"1312"</code></td><td>ซ้าย สองข้าง ซ้าย ขวา แล้วเข้ากล่อง</td></tr>
             <tr><td>ยาวขึ้น (6-7 ตัว)</td><td>ไม่จบก่อนเวลา แต่ต้องจับแยกได้ครบมากขึ้น</td></tr>
             <tr><td>สั้นลง (3 ตัว)</td><td>จอดได้แม้พลาดแยกก่อนหน้า แต่ลำดับเดียวกันอาจโผล่กลางสนาม แล้วจบก่อน</td></tr>
           </tbody>
@@ -606,7 +663,7 @@ code { border-radius: 6px; }
         <header><h3>cheak_can_L() <span class="alt">/ cheak_can_R() / cheak_can_LR()</span><span class="tag hi">ระดับสูง</span><span class="tag new">ใหม่</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>เหมือน can_L / can_R / can_LR แต่เช็คด้วย ultrasonic ก่อนว่ามีกระป๋องไหม</dd>
         <dt>ใช้ตอนไหน</dt><dd>รู้ว่าเส้นแยกอยู่ข้างไหน แต่ไม่รู้ว่ามีกระป๋องไหม: <code>FLR(); cross_down(); cheak_can_R();</code></dd>
-        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = <b>บี๊บยาว 1 ครั้ง</b> แล้วเลี้ยวกลับไปทางเดิม ใส่เลขได้เหมือน can_auto</dd></dl>
+        <dt>เกิดอะไร</dt><dd>มีกระป๋อง = ดันแล้วกลับ ไม่มี = เลี้ยวกลับไปทางเดิม (ไม่มีเสียงบอก) ใส่เลขได้เหมือน can_auto</dd></dl>
       </article>
 
       <article class="cmd" id="c-FL_U">
@@ -670,7 +727,7 @@ code { border-radius: 6px; }
         <header><h3>can_L() <span class="alt">/ can_R() / can_LR()</span></h3><span class="ends sensor"><b>หยุดเมื่อ</b>กลับมาบนเส้นหลัก</span></header>
         <dl class="use"><dt>ใช้ทำอะไร</dt><dd>ดันกระป๋องให้ครบในคำสั่งเดียว: เส้นแยกซ้าย (can_L) เส้นแยกขวา (can_R) หรือทั้งสองข้าง (can_LR)</dd>
         <dt>ใช้ตอนไหน</dt><dd>ที่แยก หลัง cross_down: <code>FLR(); cross_down(); can_R();</code></dd>
-        <dt>เกิดอะไร</dt><dd>เลี้ยวเข้าเส้นแยก ดันกระป๋อง กลับหลังหัน วิ่งกลับมาที่แยก แล้วหันไปทางเดิม พร้อมไปแยกถัดไป</dd></dl>
+        <dt>เกิดอะไร</dt><dd>เลี้ยวเข้าเส้นแยก ดันกระป๋อง กลับหลังหัน วิ่งกลับมาที่แยก (ขากลับใช้ FLJ จึงหยุดที่แยกได้แม้แยกวางเอียง) แล้วหันไปทางเดิม พร้อมไปแยกถัดไป</dd></dl>
         <div class="sim" data-demo="can_LR"></div>
       </article>
 
@@ -895,7 +952,7 @@ auto_run();                              <span class="c">// ออกกล่�
     </section>
   </main>
 </div>
-<footer class="foot">ดาวน์โหลดโค้ดหุ่นล่าสุด: <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">หน้า Release</a> (ไฟล์ zip แตกแล้วเปิดใน Arduino IDE ได้เลย)<br>คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 23 พ.ย. 2569 ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
+<footer class="foot">ดาวน์โหลดโค้ดหุ่นล่าสุด: <a href="https://github.com/LunarisElf/trt-robot-guide/releases/latest">หน้า Release</a> (ไฟล์ zip แตกแล้วเปิดใน Arduino IDE ได้เลย)<br>คู่มือนี้สร้างจากโค้ด TRT_arduino_nano.ino และ Mission.ino ฉบับวันที่ 25 พ.ย. 2569 (code-2026-11-25b) ถ้าโค้ดเปลี่ยน คำอธิบายบางข้ออาจไม่ตรง ตัวจำลองเป็นภาพประกอบ ไม่ใช่ฟิสิกส์จริง</footer>
 
 <script>
 // ===== TRT sim engine: แปลงโค้ด Arduino จริงเป็น JS generator ทีละบรรทัด =====
@@ -1144,6 +1201,7 @@ const SIM = (() => {
       *STOP(x) { yield* B(); yield* delay(x); },
       *B() { yield* B(); },
       *Set_kp(x) { st.Kp = x; },
+      *Set_kp_gain(x) { st.Kp_gain = x; },   // ตัวจำลองยังไม่คิดค่านี้ (รับไว้ให้โค้ดจริงรันได้)
       *Speed_motor(x) { st.SPEED = x; st.initial_motor_speed = x; analogWrite('B', x); analogWrite('A', x); },
       *Speed_LR(x, y) { st.speed_L = x; st.speed_R = y; },
       *speed_LR(x, y) { st.speed_L = x; st.speed_R = y; },
@@ -1185,16 +1243,16 @@ const SIM = (() => {
         if (!x) x = st.can_cm;
         yield* fw.Read_ultarsonic();
         if (st.cm < x) return true;
-        r.beepAt = r.t; r.beepLabel = 'บี๊บยาว'; return false;   // ไม่เจอ: บี๊บยาว 1 ครั้ง
+        return false;   // ไม่เจอ: ไม่มีเสียง (ชุดที่ปล่อยปิดเสียง)
       },
       *_beep_n(n) { if (n > 0) { r.beepAt = r.t; r.beepLabel = 'บี๊บ ×' + n; } yield* delay(n * 200); },
       *_seq(v) { for (const n of v.split(' ')) yield* fw[n](); },
-      *cheak_can_L(x = 0) { yield* fw.TL(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TL'); else yield* fw.TR(); },
-      *cheak_can_R(x = 0) { yield* fw.TR(); if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TR'); else yield* fw.TL(); },
+      *cheak_can_L(x = 0) { yield* fw.TL(); if (yield* fw._see(x)) yield* fw._seq('push TR FLJ cross_down TL'); else yield* fw.TR(); },
+      *cheak_can_R(x = 0) { yield* fw.TR(); if (yield* fw._see(x)) yield* fw._seq('push TR FLJ cross_down TR'); else yield* fw.TL(); },
       *cheak_can_LR(x = 0) {
         yield* fw.TL();
-        if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down'); else yield* fw._seq('TR TR');
-        if (yield* fw._see(x)) yield* fw._seq('push TR FL cross_down TR'); else yield* fw.TL();
+        if (yield* fw._see(x)) yield* fw._seq('push TR FLJ cross_down'); else yield* fw._seq('TR TR');
+        if (yield* fw._see(x)) yield* fw._seq('push TR FLJ cross_down TR'); else yield* fw.TL();
       },
       *can_auto(x = 0) {
         yield* fw.cross_down();
@@ -1223,11 +1281,11 @@ const SIM = (() => {
     const combo = {
       FL_C: 'FL cross', FLL_C: 'FLL cross', FLR_C: 'FLR cross', FL_CD: 'FL cross_down', FLL_CD: 'FLL cross_down', FLR_CD: 'FLR cross_down',
       FL_L: 'FL cross_down TL', FL_R: 'FL cross_down TR', FLL_L: 'FLL cross_down TL', FLL_R: 'FLL cross_down TR', FLR_L: 'FLR cross_down TL', FLR_R: 'FLR cross_down TR',
-      can_L: 'TL push TR FL cross_down TL', can_R: 'TR push TR FL cross_down TR',
-      can_LR: 'TL push TR FL cross_down push TR FL cross_down TR',
+      can_L: 'TL push TR FLJ cross_down TL', can_R: 'TR push TR FLJ cross_down TR',
+      can_LR: 'TL push TR FLJ cross_down push TR FLJ cross_down TR',
     };
     for (const [k, v] of Object.entries(combo)) fw[k] = function* () { for (const n of v.split(' ')) yield* fw[n](); };
-    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd', 'can_cm', 'debug_beep'];
+    const VARS = ['speed_trun', 'speed_cross', 'time_cross', 'trim_L', 'trim_R', 'RAMP_MS', 'Kp', 'Kd', 'can_cm', 'debug_beep', 'coin_on'];
 
     read_sensor();   // ค่าเริ่มต้นของเซนเซอร์ ให้ภาพแรกแสดงถูกก่อนกดเล่น
     return { r, st, field, fw, VARS, sensorPos, analogRead, onBlackAt: (x, y) => onBlack(field, x, y) };

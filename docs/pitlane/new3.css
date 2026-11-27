@@ -1,0 +1,177 @@
+
+/* ================= Motion: ทุกอย่างอยู่ใน no-preference ================= */
+/* เส้นเหลืองหัวข้อ: วาดเข้าเป็นเส้นจริง (ไม่ใช้ border เพื่อให้ animate ได้) */
+.main .sec > h2, .main .group-h { border-top: 0; position: relative; padding-top: 25px; }
+.main .cmd > header { border-top: 0; position: relative; }
+.main .sec > h2::before, .main .group-h::before, .main .cmd > header::before {
+  content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 3px; background: var(--acc); transform-origin: left center;
+}
+.bn { position: relative; }
+.bn > a, .bn > .bn-h { position: relative; z-index: 1; }
+.bn-ind { position: absolute; left: 0; top: 0; width: 100%; height: 0; border-radius: 4px; background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--edge-2); pointer-events: none; z-index: 0; opacity: 0; }
+.bn-ind::before { content: ""; position: absolute; left: 3px; top: 50%; width: 6px; height: 6px; margin-top: -3px; background: var(--acc); border-radius: 50%; }
+.bn-ind.on { opacity: 1; }
+.bn a[aria-current="page"] { background: transparent; box-shadow: none; }
+.bn a[aria-current="page"]::before { display: none; }
+.mast-bar .now { display: inline-block; }
+.main a:not(.gi):not(.btn), .mast-bar a, footer.foot a {
+  text-decoration: none; background: linear-gradient(rgba(242, 194, 48, .5), rgba(242, 194, 48, .5)) 0 100% / 100% 1px no-repeat, linear-gradient(var(--acc), var(--acc)) 0 100% / 0 2px no-repeat; padding-bottom: 2px;
+}
+.sens span { transition: background .15s, color .15s, border-color .15s; }
+
+@media (prefers-reduced-motion: no-preference) {
+  :root { --ease: cubic-bezier(.16, 1, .3, 1); }
+
+  /* ---- หัวเว็บ: ชื่อเรื่องถูกเปิดออก สนามลอยขึ้น แสงไฟพิทไหลช้า ๆ ---- */
+  .mast { overflow: hidden; }
+  .mast::before {
+    content: ""; position: absolute; right: -12vw; top: -22vw; width: 62vw; height: 62vw; pointer-events: none; z-index: 0;
+    background: radial-gradient(closest-side, rgba(242, 194, 48, .11), rgba(242, 194, 48, 0) 70%); animation: glow 14s ease-in-out infinite alternate;
+  }
+  .mast-field, .mast-bar { position: relative; z-index: 1; }
+  @keyframes glow { from { transform: translate(0, 0) scale(1); } to { transform: translate(-9vw, 8vw) scale(1.18); } }
+  .pad { animation: none; }
+  .pad h1 { animation: wipe 1.05s .1s var(--ease) both; }
+  .pad p { animation: vin .8s .45s var(--ease) both; }
+  @keyframes wipe { from { clip-path: inset(-25% 100% -25% 0); transform: translateX(-14px); } to { clip-path: inset(-25% -3% -25% 0); transform: none; } }
+  .mast canvas { animation: matin 1.1s .3s var(--ease) both; }
+  @keyframes matin { from { opacity: 0; transform: translateY(26px) scale(.985); border-color: var(--acc); } to { opacity: 1; transform: none; } }
+  .mast-bar { animation: vin .7s .75s var(--ease) both; }
+  .mast-bar .now.flash { animation: nowflash .55s var(--ease); }
+  @keyframes nowflash { from { opacity: .2; transform: translateY(-5px); color: #fff; } to { opacity: 1; transform: none; } }
+
+  /* ---- เปลี่ยนหน้า: ลูกของหน้าที่เปิดเด้งขึ้นทีละชิ้น ---- */
+  .vin { animation: vin .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+  @keyframes vin { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  h2.vin::before, h3.vin::before, header.vin::before { animation: rule .8s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + 80ms); }
+  @keyframes rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .vin.gi { animation-name: vrow; }
+  @keyframes vrow { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+
+  /* ---- เมนูซ้าย ---- */
+  .bn-ind { transition: transform .45s var(--ease), height .35s var(--ease), opacity .2s; }
+  .bn-ind.nt { transition: none; }
+  .bn.boot > a, .bn.boot > .bn-h { animation: navin .55s var(--ease) both; animation-delay: calc(var(--n, 0) * 16ms); }
+  @keyframes navin { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+  .bn a { transition: background .15s, color .15s, transform .25s var(--ease); }
+  .bn a:hover { transform: translateX(4px); }
+  .bn a .t { transition: transform .25s var(--ease); }
+  .bn a:hover .t { transform: scale(1.08); }
+
+  /* ---- ตอบสนองเมื่อชี้/กด ---- */
+  .btn { transition: background .15s, border-color .15s, transform .2s var(--ease), box-shadow .25s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -10px rgba(0, 0, 0, .9); }
+  .btn:active { transform: translateY(1px) scale(.97); }
+  .btn.go:hover { box-shadow: 0 8px 22px -8px rgba(242, 194, 48, .45); }
+  .seg button { transition: background .2s, color .2s, transform .15s; }
+  .seg button:active { transform: scale(.95); }
+  .gi { transition: background .2s; }
+  .gi b { transition: transform .3s var(--ease), color .2s; }
+  .gi:hover b { transform: translateX(8px); color: var(--acc); }
+  .gi em { transition: transform .3s var(--ease); }
+  .gi:hover em { transform: translateX(-4px); }
+  .pager button { transition: border-color .15s, transform .25s var(--ease), background .2s; }
+  .pager button:hover { background: var(--panel-2); }
+  .pager .pv:hover { transform: translateX(-4px); }
+  .pager .nx:hover { transform: translateX(4px); }
+  .explore .presets button { transition: border-color .15s, transform .2s var(--ease), background .2s; }
+  .explore .presets button:hover { transform: translateY(-2px); background: #232a33; }
+  .explore .sens button { transition: transform .15s var(--ease), background .15s, color .15s, border-color .15s; }
+  .explore .sens button:hover { transform: translateY(-3px); }
+  .explore .sens button:active { transform: translateY(0) scale(.94); }
+  .sim, .explore, .play { transition: border-color .3s, box-shadow .3s; }
+  .sim:hover, .explore:hover, .play:hover { border-color: #4a5463; }
+  .bar i { transition: background .2s; }
+  .main a:not(.gi):not(.btn), .mast-bar a, footer.foot a { transition: background-size .35s var(--ease); }
+  .main a:not(.gi):not(.btn):hover, .mast-bar a:hover, footer.foot a:hover { background-size: 100% 1px, 100% 2px; }
+  .tbl tbody tr { transition: background .15s; }
+  .tbl tbody tr:hover { background: rgba(255, 255, 255, .03); }
+  .tips li { transition: transform .3s var(--ease); }
+  .tips li:hover { transform: translateX(5px); }
+  .can { transition: transform .35s var(--ease); }
+  .tips li:hover .can, .can-note:hover .can { transform: scale(1.18) rotate(-8deg); }
+  details.code[open] > pre { animation: vin .45s var(--ease) both; }
+  .tag.new { background-image: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .22) 50%, transparent 70%); background-size: 250% 100%; background-repeat: no-repeat; animation: shine 4.5s 1.2s ease-in-out infinite; }
+  @keyframes shine { 0% { background-position: 150% 0; } 35%, 100% { background-position: -50% 0; } }
+}
+
+/* ไม่มีหัวเว็บหุ่นวิ่งแล้ว: เก็บ h1 ไว้ให้โปรแกรมอ่านหน้าจอ แต่ไม่แสดง */
+.mast { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.bn-brand { font: 700 22px/1.2 var(--disp); letter-spacing: -.01em; color: var(--fg); margin: 0 0 2px; }
+.page { padding-top: 24px; }
+
+/* creative */
+.main { position: relative; }
+.sim, .explore, .play, .gi, .pager button, .lvl-bar, .btn { background-image: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), rgba(242, 194, 48, .08), transparent 65%); }
+@media (prefers-reduced-motion: no-preference) {
+  /* หุ่นตัวเล็กวิ่งนำเส้นเหลือง */
+  h2.vin::after, h3.group-h.vin::after, header.vin::after {
+    content: ""; position: absolute; top: -5px; left: 0; width: 14px; height: 13px; border-radius: 3px; pointer-events: none;
+    background: radial-gradient(circle, var(--acc) 0 1.4px, transparent 1.9px) right 1px top 1px / 3px 11px repeat-y, #e8ebef;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .6);
+    animation: drive .8s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + 80ms);
+  }
+  @keyframes drive { 0% { left: 0; opacity: 1; } 80% { left: calc(100% - 14px); opacity: 1; } 100% { left: calc(100% - 14px); opacity: 0; } }
+
+  /* คำในหัวข้อลอยขึ้นจากเบลอ */
+  .vin .w { display: inline-block; animation: wrise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + var(--w, 0) * 38ms + 60ms); }
+  @keyframes wrise { from { opacity: 0; transform: translateY(.5em) rotate(2deg); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+  /* แสงสแกนผ่านหน้า เหมือนแถบเซนเซอร์กวาด */
+  .main.scan::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -140px; width: 140px; pointer-events: none; z-index: 2;
+    background: linear-gradient(90deg, transparent, rgba(242, 194, 48, .09) 55%, rgba(242, 194, 48, .22) 62%, transparent 64%);
+    animation: scan 1s cubic-bezier(.45, 0, .2, 1) both;
+  }
+  @keyframes scan { from { left: -140px; opacity: 1; } 85% { opacity: 1; } to { left: 100%; opacity: 0; } }
+
+  /* คลื่นกดปุ่ม */
+  .btn, .seg button, .pager button, .explore .sens button, .explore .presets button { position: relative; overflow: hidden; }
+  .rip { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: currentColor; opacity: .3; pointer-events: none; transform: scale(0); animation: rip .6s var(--ease) forwards; }
+  @keyframes rip { to { transform: scale(var(--s, 30)); opacity: 0; } }
+
+  /* แถบไฮไลต์เมนูยืดหยุ่น */
+  .bn-ind { transition: transform .38s cubic-bezier(.3, 1.35, .5, 1), height .3s cubic-bezier(.3, 1.2, .5, 1), opacity .2s; }
+
+  /* รายการระดับสูงไหลเข้า */
+  .bn a.lvlin { animation: lvlin .55s var(--ease) both; animation-delay: calc(var(--n, 0) * 45ms); }
+  @keyframes lvlin { from { opacity: 0; transform: translateX(-16px); background: rgba(242, 194, 48, .18); } 60% { background: rgba(242, 194, 48, .12); } to { opacity: 1; transform: none; background: transparent; } }
+}
+.main { overflow-x: clip; }
+@media (prefers-reduced-motion: no-preference) {
+  h2.vin::after, h3.group-h.vin::after, header.vin::after { width: 16px; box-shadow: 3px -4px 0 -2px #8b95a3, 3px 4px 0 -2px #8b95a3, 0 2px 8px rgba(0, 0, 0, .6); }
+}
+
+/* changelog */
+.clog { max-width: 860px; margin-top: 10px; }
+.day { margin: 0 0 56px; }
+.day-h { font: 700 26px/1.3 var(--disp); margin: 0 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--edge-2); display: flex; align-items: baseline; gap: 12px; }
+.day-h time { font-variant-numeric: tabular-nums; }
+.rel { padding: 22px 0 24px; border-bottom: 1px solid var(--edge); }
+.rel:last-child { border-bottom: 0; }
+.rel > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.rel h4 { font: 700 20px/1.3 var(--disp); margin: 0; }
+.rel .when { color: var(--fg3); font-size: 15px; font-variant-numeric: tabular-nums; }
+.rel .dl { margin-left: auto; font: 700 14px/1.2 var(--mono); }
+.rel.web h4 { color: var(--fg2); }
+.rel ul { margin: 12px 0 0; padding-left: 1.3em; max-width: 68ch; }
+.rel li { margin: .45em 0; color: var(--fg2); }
+.rel li::marker { color: var(--acc); }
+.rel li code { color: var(--acc); }
+
+.more { margin: 8px 0 4px; max-width: 68ch; }
+.more > summary { cursor: pointer; width: max-content; font: 700 14px/1.4 var(--disp); color: var(--acc); padding: 2px 0; list-style: none; }
+.more > summary::before { content: "▸"; display: inline-block; margin-right: 6px; transition: transform .25s; }
+.more[open] > summary::before { transform: rotate(90deg); }
+.more > summary::-webkit-details-marker { display: none; }
+.more[open] { padding: 6px 0 8px 16px; border-left: 1px solid var(--edge-2); }
+.more .use { margin-top: 8px; }
+.more .use dt { color: var(--fg3); }
+.more .use dd { color: var(--fg2); }
+.more .tbl { font-size: 15px; }
+.more-note, .more-links { font-size: 15px; color: var(--fg3); margin: 10px 0 0; }
+@media (prefers-reduced-motion: no-preference) { .more[open] > :not(summary) { animation: vin .45s var(--ease) both; } }
+/* จุดนำหน้ารายการที่เลือก: เว้นที่ให้จุดไม่ชนตัวอักษร */
+.bn a { padding-left: 20px; }
+.bn-h { padding-left: 20px; }
+.bn-ind::before { left: 7px; }

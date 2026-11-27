@@ -4,28 +4,25 @@ void Mission() {
   coin_on = true;          //true = ดันกระป๋องแล้วเล่นเสียงเหรียญ Mario
   end_pat = "1312";        //auto_run: ลำดับแยกสุดท้ายก่อนจอด 1 ซ้าย 2 ขวา 3 คู่ (สูงสุด 15 ตัว)
   debug_beep = false;        //true = can_auto บี๊บบอกแยก: 1 ซ้าย 2 ขวา 3 สองข้าง (ปิดตอนแข่ง)
-  Set_kp(20);               //ค่าการเปลี่ยนความเร็ว motor ตอนวิ่งตามเส้น (เส้นตรง 10-20 , เส้นโค้งเยอะๆ 20-30)
-  Set_kp_gain(3);           //Kp เพิ่มตาม |error| (0 = ปิด) โค้งแรง Kp ขึ้นเอง
-  Speed_motor(200);         //ความเร็ว motor วิ่งตามเส้น (ทางตรง 150-220 , ทางโค้ง 100-120)
+  Set_kp(30);               //ค่าการเปลี่ยนความเร็ว motor ตอนวิ่งตามเส้น (เส้นตรง 10-20 , เส้นโค้งเยอะๆ 20-30)
+  Set_kp_gain(0);           //Kp เพิ่มตาม |error| (0 = ปิด) โค้งแรง Kp ขึ้นเอง
+  Speed_motor(255);         //ความเร็ว motor วิ่งตามเส้น (ทางตรง 150-220 , ทางโค้ง 100-120)
   Speed_LR(120, 120);       //ความเร็วถอยตามเส้น GBL (และ GO/GB)
   speed_trun = 255;         //ความเร็ว motor เลี้ยวเข้าเส้นแบบใช้ sensor (TR,TL)
   speed_cross = 95;         //ความเร็ว motor เลี้ยวข้ามแยกเพื่อเลี้ยว (FL_CD,FLL_CD,FLR_CD)
   time_cross = 175;         //เวลาเดิน motor เลี้ยวข้ามแยกเพื่อเลี้ยว (FL_CD,FLL_CD,FLR_CD)
   ///______________________________________เขียนโปรแกรมภายในคอมเม้น__________________________________________________//
-  auto_run(); return;
-
-  FL_C(); FL_time(4300); FLR_CD(); can_R();                     // 1
-  FL_time(650); FLL_CD(); can_L();                              // 2
-  FL_time(4000); FLL_CD(); can_L();                             // 3
-  FLR_CD(); can_R();                                            // 4
-  FL_time(1300); FL_CD(); TR(); push(); TR(); FLL_CD(); TR();   // 5
-  FL_time(500); FLL_CD(); can_L();                              // 6
-  FL();
-
+  FL_C(); FL_CD(); can_R();                 // 1
+  FL_time(6000); FLR_CD(); can_R();         // 2
+  FL_CD(); can_R();                         // 3
+  FLR_CD(); can_R();                        // 4
+  FL_time(800); FLL_CD(); can_L();           // 5
+  FL_time(3500); FLR_CD(); can_R();         // 6
+  FL(); cross();
  }///______________________________________***ระวัง อย่าเผลอลบปีกกา__________________________________________________//
  void push() {
   start_time = millis();
-  while (millis() - start_time < 365) {
+  while (millis() - start_time < 315) {
     read_sensor();
     cheack_error_down();   // พ้นปลายเส้น (ขาวหมด) = error 0 วิ่งตรง ไม่เลี้ยว/หมุนตามค่าที่จำไว้
     follow_line();
@@ -90,11 +87,11 @@ void FLR_R() {
   TR();
 }
 
-void can_L()  { TL(); push(); TR(); FL(); cross_down(); TL(); }   // ดันแล้วกลับหลัง วิ่งกลับถึงแยก เลี้ยวไปทางเดิม
-void can_R()  { TR(); push(); TR(); FL(); cross_down(); TR(); }
+void can_L()  { TL(); push(); TR(); FLJ(); cross_down(); TL(); }   // ดันแล้วกลับหลัง วิ่งกลับถึงแยก เลี้ยวไปทางเดิม
+void can_R()  { TR(); push(); TR(); FLJ(); cross_down(); TR(); }
 void can_LR() {
-  TL(); push(); TR(); FL(); cross_down();   // ดันซ้าย กลับหลัง วิ่งข้ามแยกตรงเข้ากิ่งขวา
-  push(); TR(); FL(); cross_down(); TR();   // ดันขวา กลับหลัง กลับถึงแยก เลี้ยวไปทางเดิม
+  TL(); push(); TR(); FLJ(); cross_down();   // ดันซ้าย กลับหลัง วิ่งข้ามแยกตรงเข้ากิ่งขวา
+  push(); TR(); FLJ(); cross_down(); TR();   // ดันขวา กลับหลัง กลับถึงแยก เลี้ยวไปทางเดิม
 }
 // ยิง 3 ครั้ง เอาค่ากลาง
 bool ping_can(int x) {
@@ -129,21 +126,21 @@ void beep_n(int n) {   // บี๊บสั้น n ครั้ง
 // เลี้ยวเข้าเส้นแยก เจอกระป๋อง = ดัน แล้วกลับ / ไม่เจอ = เลี้ยวกลับทางเดิม
 void cheak_can_L(int x) {
   TL();
-  if (see_can(x)) { push(); TR(); FL(); cross_down(); TL(); }
+  if (see_can(x)) { push(); TR(); FLJ(); cross_down(); TL(); }
   else TR();
 }
 void cheak_can_R(int x) {
   TR();
-  if (see_can(x)) { push(); TR(); FL(); cross_down(); TR(); }
+  if (see_can(x)) { push(); TR(); FLJ(); cross_down(); TR(); }
   else TL();
 }
 
 
 void cheak_can_LR(int x) {
   TL();
-  if (see_can(x)) { push(); TR(); FL(); cross_down(); }   // กลับมาหันเข้าเส้นแยกขวา
+  if (see_can(x)) { push(); TR(); FLJ(); cross_down(); }   // กลับมาหันเข้าเส้นแยกขวา
   else { TR(); TR(); }
-  if (see_can(x)) { push(); TR(); FL(); cross_down(); TR(); }
+  if (see_can(x)) { push(); TR(); FLJ(); cross_down(); TR(); }
   else TL();
 }
 // ใช้หลัง FLJ(): ข้ามแยก ดูว่าแยกเดียวหรือแยกคู่ แล้วเช็คกระป๋องทุกเส้นแยก

@@ -36,7 +36,8 @@ int right_motor_speed;
 int speed_cross = 100;
 int speed_trun = 150;
 int speed_fix = 90;   // ความเร็วหมุนส่ายหากระป๋อง
-int trim_L = 0;  // ลดความเร็วล้อซ้าย (วัด 2026-11-16 ที่ 240: เบ้ขวา ลด 10 แล้ววิ่งตรง)
+const int BACK_SUB = 80;   // ถอยตามเส้น ลบความเร็ว
+int trim_L = 10;  // ลดความเร็วล้อซ้าย (วัด 2026-11-16 ที่ 240: เบ้ขวา ลด 10 แล้ววิ่งตรง)
 int trim_R = 0;   // ลดความเร็วล้อขวา (ใส่เมื่อล้อขวาเร็วกว่า)
 unsigned long time_cross = 300;
 
@@ -256,9 +257,9 @@ void motor_control_back() {
   else if (right_motor_speed < 0) right_motor_speed = 0;
 
   // เคสหลุดเส้นหนัก ๆ ใช้หมุนหาทิศทาง
-  // speed-80 ติดลบได้ และ analogWrite(ค่าติดลบ) จะวนกลับเป็นความเร็วสูง เลยจำกัดไม่ให้ต่ำกว่า 0
-  int back_L = max(left_motor_speed - 80, 0);
-  int back_R = max(right_motor_speed - 80, 0);
+  // speed-BACK_SUB ติดลบได้ และ analogWrite(ค่าติดลบ) จะวนกลับเป็นความเร็วสูง เลยจำกัดไม่ให้ต่ำกว่า 0
+  int back_L = max(left_motor_speed - BACK_SUB, 0);
+  int back_R = max(right_motor_speed - BACK_SUB, 0);
 
   if (error == 9) {
     // หมุนทิศเดิม แต่ตอนนี้เราอยู่ในโหมดถอยหลัง
@@ -569,7 +570,7 @@ void cross_down() {
 }
 
 void bcross_down() {
-  initial_motor_speed = speed_cross + 80;   // back ลบ 80
+  initial_motor_speed = speed_cross + BACK_SUB;   // back ลบ BACK_SUB
   start_time = millis();
   while (millis() - start_time < time_cross) {
     read_sensor();          // อ่านเซนเซอร์
@@ -624,7 +625,7 @@ void GB(int y) {
 // ความเร็วฐาน = speed_L เท่ากับ GB เวลาที่จูนไว้กับ GB ใช้ต่อได้
 // ใช้ C[1]-C[3] จับเส้น ไม่สนเซนเซอร์ริม ถอยผ่านหัว T หรือจุดแยกจะไม่ส่าย
 void GBL(unsigned long x) {   // ไม่เบรกตอนเริ่ม: push() เบรกมาแล้ว (ถ้าเรียกตอนหุ่นวิ่งอยู่ ให้ใส่ B() ก่อน)
-  initial_motor_speed = speed_L + 80;   // motor_control_back ลบ 80 ออก เลยบวกคืน ให้ถอยจริงที่ speed_L
+  initial_motor_speed = speed_L + BACK_SUB;   // motor_control_back ลบ BACK_SUB ออก เลยบวกคืน ให้ถอยจริงที่ speed_L
   start_time = millis();
   while (millis() - start_time < x) {
     read_sensor();
